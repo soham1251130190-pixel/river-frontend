@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anomaly Alerts — AquaWatch</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .alerts-header {
+      padding: 40px 40px 28px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .alerts-title { font-family:var(--font-display);font-size:28px;font-weight:700;margin-bottom:6px; }
+    .alerts-subtitle { font-size:14px;color:var(--text-muted); }
+
+    /* ── FILTER BAR ─────────────────────────────────── */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 8px 18px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid var(--glass-border);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { color: var(--neon-cyan); border-color: rgba(0,245,255,0.25); }
+    .filter-btn.active {
+      background: rgba(0,245,255,0.08);
+      color: var(--neon-cyan);
+      border-color: rgba(0,245,255,0.3);
+    }
+    .filter-btn.f-critical.active { background:rgba(255,51,102,0.08); color:var(--neon-red);   border-color:rgba(255,51,102,0.3); }
+    .filter-btn.f-elevated.active { background:rgba(255,170,0,0.08);  color:var(--neon-amber); border-color:rgba(255,170,0,0.3); }
+
+    /* ── STATS ROW ──────────────────────────────────── */
+    .alert-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      padding: 0 40px 28px;
+    }
+    .astat-card { padding: 22px 20px; }
+    .astat-num {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .astat-label { font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; }
+
+    /* ── ALERT CARDS ────────────────────────────────── */
+    .alerts-body {
+      padding: 0 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .alert-card {
+      padding: 0;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .alert-card:hover { transform: translateX(4px); }
+
+    .alert-card-inner {
+      display: grid;
+      grid-template-columns: 6px 1fr auto;
+      align-items: stretch;
+    }
+    .alert-severity-bar { width: 6px; }
+
+    .alert-content {
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 20px;
+    }
+    .alert-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .alert-event-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .alert-event-title {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .alert-event-time {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .alert-readings {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .alert-reading {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .alert-reading-label { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+    .alert-reading-val   { font-family: var(--font-display); font-size: 16px; font-weight: 600; }
+
+    .alert-score-display {
+      text-align: center;
+      padding: 0 20px 0 0;
+    }
+    .alert-score-num {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 900;
+    }
+    .alert-score-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* empty state */
+    .empty-state {
+      text-align: center;
+      padding: 80px 40px;
+      color: var(--text-muted);
+    }
+    .empty-icon { font-size: 60px; margin-bottom: 16px; opacity: 0.4; }
+    .empty-title { font-family: var(--font-display); font-size: 18px; color: var(--neon-green); margin-bottom: 8px; }
+    .empty-desc { font-size: 14px; }
+
+    /* ── TIMELINE ────────────────────────────────────── */
+    .timeline-section {
+      padding: 40px 40px 0;
+    }
+    .timeline-title {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+    }
+    .timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px; top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--neon-red), transparent);
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 24px;
+      padding: 16px 20px;
+    }
+    .timeline-dot {
+      position: absolute;
+      left: -25px;
+      top: 20px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      border: 2px solid var(--neon-red);
+      background: var(--bg-deep);
+      box-shadow: 0 0 8px var(--neon-red);
+    }
+    .timeline-dot.elevated {
+      border-color: var(--neon-amber);
+      box-shadow: 0 0 8px var(--neon-amber);
+    }
+    .timeline-time { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+    .timeline-desc { font-size: 13px; color: var(--text-secondary); }
+    .timeline-vals { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+    .tval {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 900px) {
+      .alert-stats { grid-template-columns: 1fr 1fr; }
+      .alert-content { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">🌊</div>
+    <div>
+      <div class="nav-logo-text">AQUAWATCH</div>
+      <div class="nav-logo-sub">River Pollution Monitor</div>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">🏠 Home</a></li>
+    <li><a href="dashboard.html">📡 Dashboard</a></li>
+    <li><a href="history.html">📊 History</a></li>
+    <li><a href="alerts.html" class="active">⚠️ Alerts</a></li>
+    <li><a href="about.html">ℹ️ About</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="status-dot" id="nav-dot"></div>
+    <span id="nav-status">Loading...</span>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="alerts-header fade-in">
+    <div>
+      <div class="alerts-title">Anomaly Alerts</div>
+      <div class="alerts-subtitle">All pollution events detected by the ML model — last 7 days</div>
+    </div>
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="setFilter('all', this)">All Events</button>
+      <button class="filter-btn f-critical" onclick="setFilter('critical', this)">🔴 Critical</button>
+      <button class="filter-btn f-elevated" onclick="setFilter('elevated', this)">🟡 Elevated</button>
+    </div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="alert-stats">
+    <div class="glass-card astat-card fade-in">
+      <div class="astat-num neon-text-red" id="stat-total">--</div>
+      <div class="astat-label">Total Alerts (7 days)</div>
+    </div>
+    <div class="glass-card astat-card fade-in">
+      <div class="astat-num" style="color:var(--neon-red)" id="stat-critical">--</div>
+      <div class="astat-label">Critical Events</div>
+    </div>
+    <div class="glass-card astat-card fade-in">
+      <div class="astat-num" style="color:var(--neon-amber)" id="stat-elevated">--</div>
+      <div class="astat-label">Elevated Events</div>
+    </div>
+    <div class="glass-card astat-card fade-in">
+      <div class="astat-num" style="color:var(--neon-teal)" id="stat-last">--</div>
+      <div class="astat-label">Hours Since Last Alert</div>
+    </div>
+  </div>
+
+  <!-- ALERT CARDS -->
+  <div class="alerts-body" id="alerts-container">
+    <div style="text-align:center;padding:60px;color:var(--text-muted)">Loading anomaly data...</div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline-section fade-in">
+    <div class="timeline-title">ANOMALY TIMELINE</div>
+    <div class="glass-card" style="padding:28px">
+      <div class="timeline" id="timeline-container">
+        <div style="color:var(--text-muted);font-size:13px">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer" style="margin-top:40px">
+    <span>AquaWatch Anomaly Detection · Powered by Isolation Forest ML</span>
+    <a href="dashboard.html" style="color:var(--neon-teal);text-decoration:none">← Live Dashboard</a>
+  </footer>
+</div>
+
+<script>
+const API = 'https://your-backend.up.railway.app';
+let allAlerts = [];
+let currentFilter = 'all';
+
+function getSeverity(score) {
+  if (score >= 0.85) return 'critical';
+  if (score >= 0.70) return 'high';
+  return 'elevated';
+}
+function getSeverityColor(sev) {
+  return sev === 'critical' ? 'var(--neon-red)' : 'var(--neon-amber)';
+}
+function getSeverityLabel(sev) {
+  return sev === 'critical' ? '🔴 CRITICAL' : '🟡 ELEVATED';
+}
+
+async function loadAlerts() {
+  try {
+    // Load both anomalies and history to cross-reference readings
+    const [anomalies, history] = await Promise.all([
+      fetch(API + '/api/anomalies').then(r => r.json()),
+      fetch(API + '/api/history?hours=168').then(r => r.json())
+    ]);
+
+    // Match anomaly timestamps with full readings from history
+    allAlerts = anomalies.map(a => {
+      const match = history.find(h => Math.abs(new Date(h.time) - new Date(a.time)) < 60000);
+      return { ...a, ...(match || {}), anomaly_score: a.value || match?.anomaly_score || 0.7 };
+    }).sort((a,b) => new Date(b.time) - new Date(a.time));
+
+    updateStats();
+    renderAlerts();
+    renderTimeline();
+
+    document.getElementById('nav-dot').classList.remove('offline');
+    document.getElementById('nav-status').textContent = 'Data loaded';
+  } catch(e) {
+    document.getElementById('nav-dot').classList.add('offline');
+    document.getElementById('nav-status').textContent = 'Offline';
+    renderFallback();
+  }
+}
+
+function updateStats() {
+  const critical = allAlerts.filter(a => getSeverity(a.anomaly_score) === 'critical');
+  const elevated = allAlerts.filter(a => getSeverity(a.anomaly_score) !== 'critical');
+  document.getElementById('stat-total').textContent    = allAlerts.length;
+  document.getElementById('stat-critical').textContent = critical.length;
+  document.getElementById('stat-elevated').textContent = elevated.length;
+
+  if (allAlerts.length > 0) {
+    const lastTime = new Date(allAlerts[0].time);
+    const hoursSince = Math.round((Date.now() - lastTime) / 3600000);
+    document.getElementById('stat-last').textContent = hoursSince + 'h';
+  } else {
+    document.getElementById('stat-last').textContent = 'N/A';
+  }
+}
+
+function renderAlerts() {
+  const filtered = currentFilter === 'all' ? allAlerts
+    : currentFilter === 'critical' ? allAlerts.filter(a => getSeverity(a.anomaly_score) === 'critical')
+    : allAlerts.filter(a => getSeverity(a.anomaly_score) !== 'critical');
+
+  const container = document.getElementById('alerts-container');
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="glass-card empty-state">
+        <div class="empty-icon">🟢</div>
+        <div class="empty-title">No Anomalies Found</div>
+        <div class="empty-desc">The water quality has been within normal parameters for the selected filter.</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map((a, i) => {
+    const score = a.anomaly_score || 0.7;
+    const sev   = getSeverity(score);
+    const color = getSeverityColor(sev);
+    const tds   = a.tds ?? '--';
+    const temp  = a.temperature ?? '--';
+    const ph    = a.ph ?? '--';
+    const time  = new Date(a.time).toLocaleString();
+    return `
+    <div class="glass-card alert-card fade-in" style="animation-delay:${i*0.06}s">
+      <div class="alert-card-inner">
+        <div class="alert-severity-bar" style="background:${color};box-shadow:0 0 8px ${color}"></div>
+        <div class="alert-content">
+          <div>
+            <div class="alert-top">
+              <div class="alert-event-icon" style="background:${color}18;border:1px solid ${color}33">
+                ${sev === 'critical' ? '🚨' : '⚠️'}
+              </div>
+              <div>
+                <div class="alert-event-title" style="color:${color}">${getSeverityLabel(sev)} — Pollution Detected</div>
+                <div class="alert-event-time">📍 Node 1 · ${time}</div>
+              </div>
+            </div>
+            <div class="alert-readings">
+              <div class="alert-reading">
+                <span class="alert-reading-label">TDS</span>
+                <span class="alert-reading-val" style="color:var(--neon-cyan)">${typeof tds === 'number' ? tds.toFixed(1) : tds} <small style="font-size:11px;color:var(--text-muted)">ppm</small></span>
+              </div>
+              <div class="alert-reading">
+                <span class="alert-reading-label">Temp</span>
+                <span class="alert-reading-val" style="color:var(--neon-amber)">${typeof temp === 'number' ? temp.toFixed(1) : temp} <small style="font-size:11px;color:var(--text-muted)">°C</small></span>
+              </div>
+              <div class="alert-reading">
+                <span class="alert-reading-label">pH</span>
+                <span class="alert-reading-val" style="color:var(--neon-teal)">${typeof ph === 'number' ? ph.toFixed(2) : ph}</span>
+              </div>
+            </div>
+          </div>
+          <div class="alert-score-display">
+            <div class="alert-score-num" style="color:${color};text-shadow:0 0 15px ${color}">${score.toFixed(2)}</div>
+            <div class="alert-score-label">Anomaly Score</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTimeline() {
+  const recent = allAlerts.slice(0, 10);
+  document.getElementById('timeline-container').innerHTML = recent.length === 0
+    ? '<div style="color:var(--neon-green);font-size:13px">✅ No anomaly events recorded — river water quality is normal.</div>'
+    : recent.map(a => {
+        const score = a.anomaly_score || 0.7;
+        const sev   = getSeverity(score);
+        const color = getSeverityColor(sev);
+        return `
+        <div class="timeline-item glass-card fade-in">
+          <div class="timeline-dot ${sev !== 'critical' ? 'elevated' : ''}"></div>
+          <div class="timeline-time">${new Date(a.time).toLocaleString()}</div>
+          <div class="timeline-desc" style="color:${color}">${getSeverityLabel(sev)} — Score: <strong>${score.toFixed(3)}</strong></div>
+          <div class="timeline-vals">
+            ${a.tds ? `<span class="tval">TDS: ${a.tds.toFixed(1)} ppm</span>` : ''}
+            ${a.temperature ? `<span class="tval">Temp: ${a.temperature.toFixed(1)}°C</span>` : ''}
+            ${a.ph ? `<span class="tval">pH: ${a.ph.toFixed(2)}</span>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+}
+
+function renderFallback() {
+  document.getElementById('alerts-container').innerHTML = `
+    <div class="glass-card" style="padding:40px;text-align:center;color:var(--text-muted)">
+      <div style="font-size:40px;margin-bottom:16px">🔌</div>
+      <div style="font-family:var(--font-display);color:var(--neon-amber);margin-bottom:8px">Backend Offline</div>
+      <div>Cannot load alert data. Check that your Flask backend is running on Railway.</div>
+    </div>`;
+}
+
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAlerts();
+}
+
+loadAlerts();
+</script>
+</body>
+</html>

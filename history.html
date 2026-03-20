@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historical Data — AquaWatch</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    .hist-header {
+      padding: 40px 40px 28px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .hist-title { font-family:var(--font-display);font-size:28px;font-weight:700;margin-bottom:6px; }
+    .hist-subtitle { font-size:14px;color:var(--text-muted); }
+
+    /* ── TIME RANGE SELECTOR ───────────────────────── */
+    .range-tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(255,255,255,0.03);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--glass-border);
+    }
+    .range-tab {
+      padding: 8px 18px;
+      border-radius: 10px;
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: all 0.2s;
+    }
+    .range-tab.active, .range-tab:hover {
+      background: rgba(0,245,255,0.1);
+      color: var(--neon-cyan);
+    }
+    .range-tab.active { box-shadow: inset 0 0 10px rgba(0,245,255,0.1); }
+
+    /* ── SUMMARY CARDS ─────────────────────────────── */
+    .summary-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      padding: 0 40px 24px;
+    }
+    .summary-card {
+      padding: 18px 16px;
+      text-align: center;
+    }
+    .summary-num {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .summary-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* ── CHART AREA ────────────────────────────────── */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 0 40px;
+    }
+    .chart-card { padding: 24px; }
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .chart-title {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      color: var(--text-secondary);
+    }
+    .chart-stats {
+      display: flex;
+      gap: 16px;
+    }
+    .chart-stat { font-size: 12px; }
+    .chart-stat span { color: var(--text-muted); margin-right: 4px; }
+    .chart-container { height: 220px; }
+
+    /* Combined chart */
+    .chart-combined { height: 280px; }
+
+    /* ── DATA TABLE ────────────────────────────────── */
+    .table-section { padding: 24px 40px 40px; }
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .table-title { font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--text-secondary);letter-spacing:1px; }
+    .table-wrap { overflow-x: auto; }
+    .table-wrap.glass-card { padding: 0; overflow: hidden; }
+    .table-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-top: 1px solid var(--glass-border);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .page-btns { display: flex; gap: 6px; }
+    .page-btn {
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      border: 1px solid var(--glass-border);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .page-btn:hover, .page-btn.active {
+      background: rgba(0,245,255,0.08);
+      color: var(--neon-cyan);
+      border-color: rgba(0,245,255,0.25);
+    }
+
+    @media (max-width: 900px) {
+      .summary-row { grid-template-columns: repeat(3,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">🌊</div>
+    <div>
+      <div class="nav-logo-text">AQUAWATCH</div>
+      <div class="nav-logo-sub">River Pollution Monitor</div>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">🏠 Home</a></li>
+    <li><a href="dashboard.html">📡 Dashboard</a></li>
+    <li><a href="history.html" class="active">📊 History</a></li>
+    <li><a href="alerts.html">⚠️ Alerts</a></li>
+    <li><a href="about.html">ℹ️ About</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="status-dot" id="nav-dot"></div>
+    <span id="nav-status">Loading...</span>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="hist-header fade-in">
+    <div>
+      <div class="hist-title">Historical Data</div>
+      <div class="hist-subtitle">Time-series analysis of all sensor readings</div>
+    </div>
+    <div class="range-tabs">
+      <button class="range-tab" onclick="setRange(2)">2H</button>
+      <button class="range-tab active" onclick="setRange(6)">6H</button>
+      <button class="range-tab" onclick="setRange(12)">12H</button>
+      <button class="range-tab" onclick="setRange(24)">24H</button>
+    </div>
+  </div>
+
+  <!-- SUMMARY STATS -->
+  <div class="summary-row">
+    <div class="glass-card summary-card fade-in">
+      <div class="summary-num neon-text" id="avg-tds">--</div>
+      <div class="summary-label">Avg TDS</div>
+    </div>
+    <div class="glass-card summary-card fade-in">
+      <div class="summary-num" style="color:var(--neon-cyan)" id="max-tds">--</div>
+      <div class="summary-label">Peak TDS</div>
+    </div>
+    <div class="glass-card summary-card fade-in">
+      <div class="summary-num" style="color:var(--neon-amber)" id="avg-temp">--</div>
+      <div class="summary-label">Avg Temp</div>
+    </div>
+    <div class="glass-card summary-card fade-in">
+      <div class="summary-num" style="color:var(--neon-teal)" id="avg-ph">--</div>
+      <div class="summary-label">Avg pH</div>
+    </div>
+    <div class="glass-card summary-card fade-in">
+      <div class="summary-num" style="color:var(--neon-blue)" id="total-readings">--</div>
+      <div class="summary-label">Readings</div>
+    </div>
+    <div class="glass-card summary-card fade-in">
+      <div class="summary-num" style="color:var(--neon-red)" id="anomaly-count">--</div>
+      <div class="summary-label">Anomalies</div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts-grid">
+
+    <!-- Combined overlay chart -->
+    <div class="glass-card chart-card fade-in">
+      <div class="chart-header">
+        <div class="chart-title">ALL PARAMETERS — COMBINED VIEW</div>
+        <div class="chart-stats">
+          <div class="chart-stat" style="color:var(--neon-cyan)">● TDS</div>
+          <div class="chart-stat" style="color:var(--neon-amber)">● Temp</div>
+          <div class="chart-stat" style="color:var(--neon-teal)">● pH</div>
+        </div>
+      </div>
+      <div class="chart-combined">
+        <canvas id="combined-chart"></canvas>
+      </div>
+    </div>
+
+    <!-- TDS full chart -->
+    <div class="glass-card chart-card fade-in">
+      <div class="chart-header">
+        <div class="chart-title" style="color:var(--neon-cyan)">TDS — TOTAL DISSOLVED SOLIDS (ppm)</div>
+        <div class="chart-stats">
+          <div class="chart-stat"><span>avg</span><strong id="cstat-avg-tds" class="neon-text">--</strong></div>
+          <div class="chart-stat"><span>max</span><strong id="cstat-max-tds" class="neon-text">--</strong></div>
+        </div>
+      </div>
+      <div class="chart-container"><canvas id="tds-chart"></canvas></div>
+    </div>
+
+    <!-- Temp chart -->
+    <div class="glass-card chart-card fade-in">
+      <div class="chart-header">
+        <div class="chart-title" style="color:var(--neon-amber)">TEMPERATURE (°C)</div>
+        <div class="chart-stats">
+          <div class="chart-stat"><span>avg</span><strong id="cstat-avg-temp" style="color:var(--neon-amber)">--</strong></div>
+          <div class="chart-stat"><span>max</span><strong id="cstat-max-temp" style="color:var(--neon-amber)">--</strong></div>
+        </div>
+      </div>
+      <div class="chart-container"><canvas id="temp-chart"></canvas></div>
+    </div>
+
+    <!-- pH chart -->
+    <div class="glass-card chart-card fade-in">
+      <div class="chart-header">
+        <div class="chart-title" style="color:var(--neon-teal)">pH LEVEL</div>
+        <div class="chart-stats">
+          <div class="chart-stat"><span>avg</span><strong style="color:var(--neon-teal)" id="cstat-avg-ph">--</strong></div>
+          <div class="chart-stat"><span>min</span><strong style="color:var(--neon-teal)" id="cstat-min-ph">--</strong></div>
+        </div>
+      </div>
+      <div class="chart-container"><canvas id="ph-chart"></canvas></div>
+    </div>
+
+    <!-- Anomaly score chart -->
+    <div class="glass-card chart-card fade-in">
+      <div class="chart-header">
+        <div class="chart-title" style="color:var(--neon-red)">ML ANOMALY SCORE OVER TIME</div>
+        <div class="chart-stats">
+          <div class="chart-stat"><span style="color:var(--neon-red)">●</span> threshold: 0.60</div>
+        </div>
+      </div>
+      <div class="chart-container"><canvas id="anomaly-chart"></canvas></div>
+    </div>
+
+  </div>
+
+  <!-- DATA TABLE -->
+  <div class="table-section">
+    <div class="table-header fade-in">
+      <div class="table-title">RAW READINGS LOG</div>
+      <span style="font-size:12px;color:var(--text-muted)" id="table-count">-- records</span>
+    </div>
+    <div class="glass-card table-wrap fade-in">
+      <table class="neon-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>TDS (ppm)</th>
+            <th>Temp (°C)</th>
+            <th>pH</th>
+            <th>Anomaly Score</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="data-table-body">
+          <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:40px">Loading data...</td></tr>
+        </tbody>
+      </table>
+      <div class="table-pagination">
+        <span id="page-info">Page 1</span>
+        <div class="page-btns">
+          <button class="page-btn" onclick="changePage(-1)">← Prev</button>
+          <button class="page-btn active" id="cur-page-btn">1</button>
+          <button class="page-btn" onclick="changePage(1)">Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>AquaWatch Historical Data · InfluxDB powered time-series</span>
+    <a href="dashboard.html" style="color:var(--neon-teal);text-decoration:none">← Back to Live Dashboard</a>
+  </footer>
+</div>
+
+<script>
+const API = 'https://your-backend.up.railway.app';
+let allData = [];
+let currentPage = 1;
+const PAGE_SIZE = 15;
+let currentHours = 6;
+
+// ── CHART SETUP ──────────────────────────────────────────
+function makeChart(id, datasets, yLabel) {
+  return new Chart(document.getElementById(id).getContext('2d'), {
+    type: 'line',
+    data: { labels: [], datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(4,21,37,0.95)', borderColor: 'rgba(0,245,255,0.2)', borderWidth: 1, titleFont: { family: 'Orbitron', size: 10 }, bodyFont: { family: 'DM Sans', size: 12 }, titleColor: '#00f5ff', bodyColor: '#7ab8cc' } },
+      scales: {
+        x: { ticks: { color: '#3d6a7a', maxTicksLimit: 8, font: { size: 10 } }, grid: { color: 'rgba(0,245,255,0.03)' } },
+        y: { ticks: { color: '#3d6a7a', font: { size: 10 } }, grid: { color: 'rgba(0,245,255,0.03)' }, title: { display: true, text: yLabel, color: '#3d6a7a', font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+function ds(color, label) {
+  return { label, data: [], borderColor: color, backgroundColor: color + '12', borderWidth: 2, fill: true, tension: 0.4, pointRadius: 2, pointHoverRadius: 5 };
+}
+
+const tdsChart     = makeChart('tds-chart',     [ds('#00f5ff','TDS')], 'ppm');
+const tempChart    = makeChart('temp-chart',    [ds('#ffaa00','Temp')], '°C');
+const phChart      = makeChart('ph-chart',      [ds('#00d4aa','pH')],  'pH');
+const anomalyChart = makeChart('anomaly-chart', [{...ds('#ff3366','Score'), fill: false}], 'score');
+
+// Add threshold line to anomaly chart
+anomalyChart.options.plugins.annotation = {};
+
+// Combined chart
+const combinedChart = new Chart(document.getElementById('combined-chart').getContext('2d'), {
+  type: 'line',
+  data: { labels: [], datasets: [
+    { label: 'TDS/10', data: [], borderColor: '#00f5ff', backgroundColor: 'transparent', borderWidth: 2, tension: 0.4, pointRadius: 0 },
+    { label: 'Temp',   data: [], borderColor: '#ffaa00', backgroundColor: 'transparent', borderWidth: 2, tension: 0.4, pointRadius: 0, borderDash: [4,4] },
+    { label: 'pH×10',  data: [], borderColor: '#00d4aa', backgroundColor: 'transparent', borderWidth: 2, tension: 0.4, pointRadius: 0, borderDash: [2,2] },
+  ]},
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#7ab8cc', font: { size: 11 } } }, tooltip: { backgroundColor: 'rgba(4,21,37,0.95)', borderColor: 'rgba(0,245,255,0.2)', borderWidth: 1 } },
+    scales: {
+      x: { ticks: { color: '#3d6a7a', maxTicksLimit: 8, font: { size: 10 } }, grid: { color: 'rgba(0,245,255,0.03)' } },
+      y: { ticks: { color: '#3d6a7a', font: { size: 10 } }, grid: { color: 'rgba(0,245,255,0.03)' } }
+    }
+  }
+});
+
+// ── LOAD DATA ────────────────────────────────────────────
+async function loadData(hours) {
+  try {
+    const history = await fetch(`${API}/api/history?hours=${hours}`).then(r => r.json());
+    allData = history.reverse(); // newest first for table
+    const labels = history.map(r => new Date(r.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+
+    // Update all charts
+    [tdsChart, tempChart, phChart, anomalyChart, combinedChart].forEach(c => { c.data.labels = labels; });
+    tdsChart.data.datasets[0].data     = history.map(r => r.tds);
+    tempChart.data.datasets[0].data    = history.map(r => r.temperature);
+    phChart.data.datasets[0].data      = history.map(r => r.ph);
+    anomalyChart.data.datasets[0].data = history.map(r => r.anomaly_score);
+    combinedChart.data.datasets[0].data= history.map(r => (r.tds / 10).toFixed(1));
+    combinedChart.data.datasets[1].data= history.map(r => r.temperature);
+    combinedChart.data.datasets[2].data= history.map(r => (r.ph * 10).toFixed(1));
+    [tdsChart, tempChart, phChart, anomalyChart, combinedChart].forEach(c => c.update());
+
+    // Summary stats
+    const tdsList  = history.map(r=>r.tds);
+    const tempList = history.map(r=>r.temperature);
+    const phList   = history.map(r=>r.ph);
+    const anomList = history.filter(r=>r.is_anomaly===1);
+    const avg = arr => (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1);
+
+    document.getElementById('avg-tds').textContent       = avg(tdsList);
+    document.getElementById('max-tds').textContent       = Math.max(...tdsList).toFixed(0);
+    document.getElementById('avg-temp').textContent      = avg(tempList);
+    document.getElementById('avg-ph').textContent        = avg(phList);
+    document.getElementById('total-readings').textContent= history.length;
+    document.getElementById('anomaly-count').textContent = anomList.length;
+
+    document.getElementById('cstat-avg-tds').textContent  = avg(tdsList);
+    document.getElementById('cstat-max-tds').textContent  = Math.max(...tdsList).toFixed(0);
+    document.getElementById('cstat-avg-temp').textContent = avg(tempList);
+    document.getElementById('cstat-max-temp').textContent = Math.max(...tempList).toFixed(1);
+    document.getElementById('cstat-avg-ph').textContent   = avg(phList);
+    document.getElementById('cstat-min-ph').textContent   = Math.min(...phList).toFixed(2);
+
+    currentPage = 1;
+    renderTable();
+    document.getElementById('nav-dot').classList.remove('offline');
+    document.getElementById('nav-status').textContent = 'Data loaded';
+  } catch(e) {
+    document.getElementById('nav-dot').classList.add('offline');
+    document.getElementById('nav-status').textContent = 'Offline';
+  }
+}
+
+// ── TABLE RENDER ─────────────────────────────────────────
+function renderTable() {
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const page  = allData.slice(start, start + PAGE_SIZE);
+  document.getElementById('table-count').textContent = allData.length + ' records';
+  document.getElementById('page-info').textContent = `Page ${currentPage} of ${Math.ceil(allData.length / PAGE_SIZE)}`;
+  document.getElementById('cur-page-btn').textContent = currentPage;
+
+  document.getElementById('data-table-body').innerHTML = page.map(r => {
+    const score = r.anomaly_score ?? 0;
+    const bad   = r.is_anomaly === 1;
+    const statusHtml = bad
+      ? `<span class="stat-chip danger">🔴 ANOMALY</span>`
+      : `<span class="stat-chip normal">🟢 NORMAL</span>`;
+    const scoreColor = score >= 0.85 ? 'var(--neon-red)' : score >= 0.60 ? 'var(--neon-amber)' : 'var(--neon-green)';
+    return `<tr>
+      <td style="font-family:var(--font-display);font-size:11px;color:var(--text-muted)">${new Date(r.time).toLocaleString()}</td>
+      <td style="color:var(--neon-cyan);font-weight:600">${(r.tds||0).toFixed(1)}</td>
+      <td style="color:var(--neon-amber)">${(r.temperature||0).toFixed(1)}</td>
+      <td style="color:var(--neon-teal)">${(r.ph||0).toFixed(2)}</td>
+      <td style="color:${scoreColor};font-family:var(--font-display);font-size:12px">${score.toFixed(3)}</td>
+      <td>${statusHtml}</td>
+    </tr>`;
+  }).join('');
+}
+
+function changePage(dir) {
+  const max = Math.ceil(allData.length / PAGE_SIZE);
+  currentPage = Math.max(1, Math.min(max, currentPage + dir));
+  renderTable();
+}
+
+function setRange(hours) {
+  currentHours = hours;
+  document.querySelectorAll('.range-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  loadData(hours);
+}
+
+loadData(currentHours);
+</script>
+</body>
+</html>

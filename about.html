@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — AquaWatch</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .about-hero {
+      padding: 60px 80px 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .about-title { font-family:var(--font-display);font-size:clamp(28px,3vw,44px);font-weight:700;line-height:1.1;margin-bottom:16px; }
+    .about-desc  { font-size:16px;color:var(--text-secondary);line-height:1.8;font-weight:300;margin-bottom:28px; }
+
+    .about-hero-visual {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .about-stat {
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .about-stat-num {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+    .about-stat-label { font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; }
+
+    /* ── TECH STACK ──────────────────────────────────── */
+    .section { padding: 0 80px 60px; }
+    .section-head { margin-bottom: 36px; }
+
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .stack-card {
+      padding: 24px 22px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .stack-icon {
+      font-size: 28px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 8px rgba(0,245,255,0.3));
+    }
+    .stack-name {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .stack-role { font-size: 13px; color: var(--text-secondary); line-height: 1.5; font-weight: 300; }
+    .stack-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ── TEAM ────────────────────────────────────────── */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+    .team-card {
+      padding: 28px 20px;
+      text-align: center;
+    }
+    .team-avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      margin: 0 auto 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      background: var(--glass-bg);
+      border: 2px solid var(--glass-border);
+      box-shadow: 0 0 20px rgba(0,245,255,0.1);
+    }
+    .team-name {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .team-role { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+    .team-tasks { margin-top: 10px; display: flex; flex-direction: column; gap: 4px; }
+    .task-tag {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 100px;
+      background: rgba(0,245,255,0.05);
+      border: 1px solid rgba(0,245,255,0.12);
+      color: var(--text-muted);
+    }
+
+    /* ── COMPONENTS TABLE ────────────────────────────── */
+    .comp-section { padding: 0 80px 60px; }
+
+    /* ── PROBLEM/SOLUTION ────────────────────────────── */
+    .ps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .ps-card { padding: 32px; }
+    .ps-head {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      margin-bottom: 20px;
+    }
+    .ps-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+      align-items: flex-start;
+    }
+    .ps-item-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+    .ps-item-text { font-size: 14px; color: var(--text-secondary); line-height: 1.5; font-weight: 300; }
+
+    /* ── REFERENCES ──────────────────────────────────── */
+    .refs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .ref-card {
+      padding: 16px 20px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .ref-num {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      opacity: 0.6;
+      flex-shrink: 0;
+      width: 24px;
+    }
+    .ref-title { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 4px; }
+    .ref-meta  { font-size: 11px; color: var(--text-muted); }
+
+    @media (max-width: 1000px) {
+      .about-hero { grid-template-columns: 1fr; padding: 40px 30px; }
+      .section { padding: 0 30px 40px; }
+      .stack-grid { grid-template-columns: 1fr 1fr; }
+      .team-grid  { grid-template-columns: 1fr 1fr; }
+      .refs-grid  { grid-template-columns: 1fr; }
+      .ps-grid    { grid-template-columns: 1fr; }
+      .about-hero-visual { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">🌊</div>
+    <div>
+      <div class="nav-logo-text">AQUAWATCH</div>
+      <div class="nav-logo-sub">River Pollution Monitor</div>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">🏠 Home</a></li>
+    <li><a href="dashboard.html">📡 Dashboard</a></li>
+    <li><a href="history.html">📊 History</a></li>
+    <li><a href="alerts.html">⚠️ Alerts</a></li>
+    <li><a href="about.html" class="active">ℹ️ About</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    <span>System Active</span>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- ABOUT HERO -->
+  <section class="about-hero fade-in">
+    <div>
+      <div class="section-label" style="margin-bottom:12px">Semester 2 — IoT Project</div>
+      <h1 class="about-title">
+        Real-Time River<br>
+        <span class="neon-text">Pollution Monitor</span>
+      </h1>
+      <p class="about-desc">
+        A low-cost IoT system deploying physical sensors at water bodies to continuously measure water quality parameters, detect anomalies using machine learning, and alert authorities within 60 seconds — for under ₹1,300.
+      </p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <span class="stat-chip normal">✅ 4-Month Timeline</span>
+        <span class="stat-chip normal">✅ 5-Member Team</span>
+        <span class="stat-chip normal">✅ Under ₹1,300</span>
+      </div>
+    </div>
+    <div class="about-hero-visual">
+      <div class="glass-card about-stat fade-in">
+        <div class="about-stat-num neon-text">3</div>
+        <div class="about-stat-label">Parameters</div>
+      </div>
+      <div class="glass-card about-stat fade-in">
+        <div class="about-stat-num" style="color:var(--neon-teal)">30s</div>
+        <div class="about-stat-label">Read Interval</div>
+      </div>
+      <div class="glass-card about-stat fade-in">
+        <div class="about-stat-num" style="color:var(--neon-amber)">&lt;60s</div>
+        <div class="about-stat-label">Alert Latency</div>
+      </div>
+      <div class="glass-card about-stat fade-in">
+        <div class="about-stat-num" style="color:var(--neon-blue)">100x</div>
+        <div class="about-stat-label">Cost Reduction</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="neon-divider" style="margin:0 80px"></div>
+
+  <!-- PROBLEM / SOLUTION -->
+  <section class="section fade-in">
+    <div class="section-head">
+      <div class="section-label" style="margin-bottom:8px">The Gap We're Filling</div>
+      <h2 class="section-title" style="font-size:28px">Problem & Solution</h2>
+    </div>
+    <div class="ps-grid">
+      <div class="glass-card ps-card" style="border-color:rgba(255,51,102,0.2)">
+        <div class="ps-head" style="color:var(--neon-red)">⚡ The Problem</div>
+        <div class="ps-item">
+          <div class="ps-item-icon">🗺️</div>
+          <div class="ps-item-text">CPCB has ~1,000 monitoring stations for 14,000 km of Indian rivers — zero coverage of minor water bodies, canals, and local streams.</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-item-icon">💸</div>
+          <div class="ps-item-text">Government monitoring stations cost ₹1–5 lakh per installation. Impractical to scale to the thousands of unmonitored locations.</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-item-icon">⏰</div>
+          <div class="ps-item-text">Manual sampling is done weekly or monthly. Industrial dumping events happening at 3 AM go completely undetected.</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-item-icon">👁️</div>
+          <div class="ps-item-text">TDS contamination from chemicals and heavy metals is invisible to the naked eye — no colour change, no smell, no visible sign.</div>
+        </div>
+      </div>
+      <div class="glass-card ps-card" style="border-color:rgba(0,255,136,0.2)">
+        <div class="ps-head" style="color:var(--neon-green)">✅ Our Solution</div>
+        <div class="ps-item">
+          <div class="ps-item-icon">💧</div>
+          <div class="ps-item-text">Deploy compact sensor nodes at under ₹1,300 per location — 100x cheaper than government stations. Scalable to hundreds of sites.</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-item-icon">🤖</div>
+          <div class="ps-item-text">Isolation Forest ML model trained on CPCB clean water baseline data. Detects abnormal multi-parameter combinations that threshold rules miss.</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-item-icon">📱</div>
+          <div class="ps-item-text">WhatsApp alerts delivered within 60 seconds of anomaly detection — reaching municipal authorities directly on phones they already use.</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-item-icon">🌐</div>
+          <div class="ps-item-text">Public dashboard with real-time map and 24-hour history accessible to citizens, journalists, and local governments — fully open.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section class="section fade-in">
+    <div class="section-head">
+      <div class="section-label" style="margin-bottom:8px">Complete Technology Stack</div>
+      <h2 class="section-title" style="font-size:28px">How It's Built</h2>
+    </div>
+    <div class="stack-grid">
+      <div class="glass-card stack-card fade-in">
+        <div class="stack-icon">⚙️</div>
+        <div>
+          <div class="stack-name">ARDUINO UNO</div>
+          <div class="stack-role">Microcontroller that reads all three sensors via CD4051 multiplexer and sends JSON to ESP-01 every 30 seconds.</div>
+          <div class="stack-badge" style="background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.2);color:var(--neon-cyan)">Hardware</div>
+        </div>
+      </div>
+      <div class="glass-card stack-card fade-in">
+        <div class="stack-icon">📶</div>
+        <div>
+          <div class="stack-name">ESP-01 + HIVEMQ</div>
+          <div class="stack-role">ESP-01 Wi-Fi module publishes sensor data to HiveMQ cloud MQTT broker over TLS. Handles reconnection automatically.</div>
+          <div class="stack-badge" style="background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.2);color:var(--neon-teal)">Connectivity</div>
+        </div>
+      </div>
+      <div class="glass-card stack-card fade-in">
+        <div class="stack-icon">🐍</div>
+        <div>
+          <div class="stack-name">FLASK (PYTHON)</div>
+          <div class="stack-role">Python backend subscribes to MQTT, runs ML scoring on every reading, stores to InfluxDB, and serves REST API endpoints.</div>
+          <div class="stack-badge" style="background:rgba(0,144,255,0.06);border:1px solid rgba(0,144,255,0.2);color:var(--neon-blue)">Backend</div>
+        </div>
+      </div>
+      <div class="glass-card stack-card fade-in">
+        <div class="stack-icon">🗄️</div>
+        <div>
+          <div class="stack-name">INFLUXDB</div>
+          <div class="stack-role">Time-series database storing every reading with nanosecond precision. Enables fast range queries for history graphs.</div>
+          <div class="stack-badge" style="background:rgba(0,144,255,0.06);border:1px solid rgba(0,144,255,0.2);color:var(--neon-blue)">Database</div>
+        </div>
+      </div>
+      <div class="glass-card stack-card fade-in">
+        <div class="stack-icon">🤖</div>
+        <div>
+          <div class="stack-name">ISOLATION FOREST</div>
+          <div class="stack-role">scikit-learn anomaly detection model trained on CPCB baseline data. Scores each reading 0.0–1.0. Threshold: 0.60.</div>
+          <div class="stack-badge" style="background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.2);color:var(--neon-green)">ML Model</div>
+        </div>
+      </div>
+      <div class="glass-card stack-card fade-in">
+        <div class="stack-icon">📱</div>
+        <div>
+          <div class="stack-name">TWILIO WHATSAPP</div>
+          <div class="stack-role">Automated WhatsApp alerts with TDS value, temperature, pH, anomaly score, and severity delivered within 60 seconds.</div>
+          <div class="stack-badge" style="background:rgba(255,51,102,0.06);border:1px solid rgba(255,51,102,0.2);color:var(--neon-red)">Alerts</div>
+        </div>
+      </div>
+      <div class="glass-card stack-card fade-in">
+        <div class="stack-icon">🗺️</div>
+        <div>
+          <div class="stack-name">LEAFLET.JS</div>
+          <div class="stack-role">Interactive OpenStreetMap-based map showing sensor node with real-time colour-coded status marker. Free, open-source.</div>
+          <div class="stack-badge" style="background:rgba(155,89,182,0.06);border:1px solid rgba(155,89,182,0.2);color:#9B59B6">Frontend</div>
+        </div>
+      </div>
+      <div class="glass-card stack-card fade-in">
+        <div class="stack-icon">📊</div>
+        <div>
+          <div class="stack-name">CHART.JS</div>
+          <div class="stack-role">Responsive line charts for 24-hour TDS, temperature, pH, and anomaly score history. Animated, interactive tooltips.</div>
+          <div class="stack-badge" style="background:rgba(155,89,182,0.06);border:1px solid rgba(155,89,182,0.2);color:#9B59B6">Frontend</div>
+        </div>
+      </div>
+      <div class="glass-card stack-card fade-in">
+        <div class="stack-icon">🚀</div>
+        <div>
+          <div class="stack-name">RAILWAY + VERCEL</div>
+          <div class="stack-role">Flask backend deployed on Railway free tier. This dashboard deployed on Vercel free tier. Both provide public HTTPS URLs.</div>
+          <div class="stack-badge" style="background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.2);color:var(--neon-teal)">Deployment</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPONENTS TABLE -->
+  <section class="comp-section fade-in">
+    <div class="section-head">
+      <div class="section-label" style="margin-bottom:8px">Hardware Bill of Materials</div>
+      <h2 class="section-title" style="font-size:28px">Components — ₹1,259 Total</h2>
+    </div>
+    <div class="glass-card" style="overflow:hidden">
+      <table class="neon-table">
+        <thead>
+          <tr><th>#</th><th>Component</th><th>Purpose</th><th>Cost (₹)</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td style="color:var(--text-primary);font-weight:500">Arduino Uno</td><td>Main microcontroller</td><td style="color:var(--neon-green)">0</td><td><span class="stat-chip normal" style="font-size:11px">Owned</span></td></tr>
+          <tr><td>2</td><td style="color:var(--text-primary);font-weight:500">Bluecraft ESP-01</td><td>Wi-Fi + MQTT module</td><td style="color:var(--neon-cyan)">84</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
+          <tr><td>3</td><td style="color:var(--text-primary);font-weight:500">ESP-01 Adapter 3.3V/5V</td><td>Handles voltage level shifting</td><td style="color:var(--neon-cyan)">60</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
+          <tr><td>4</td><td style="color:var(--text-primary);font-weight:500">QBM TDS Sensor (gold-plated)</td><td>Measures dissolved solids</td><td style="color:var(--neon-cyan)">420</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
+          <tr><td>5</td><td style="color:var(--text-primary);font-weight:500">pH Sensor Module</td><td>Measures acidity/alkalinity</td><td style="color:var(--neon-cyan)">350</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
+          <tr><td>6</td><td style="color:var(--text-primary);font-weight:500">DS18B20 Waterproof Probe</td><td>Water temperature</td><td style="color:var(--neon-cyan)">80</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
+          <tr><td>7</td><td style="color:var(--text-primary);font-weight:500">CD4051 Multiplexer</td><td>Shares A0 between TDS + pH</td><td style="color:var(--neon-cyan)">15</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
+          <tr><td>8</td><td style="color:var(--text-primary);font-weight:500">pH Buffer Solutions (4.0 + 7.0)</td><td>Sensor calibration</td><td style="color:var(--neon-cyan)">100</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
+          <tr><td>9</td><td style="color:var(--text-primary);font-weight:500">USB Power Bank</td><td>Field power supply</td><td style="color:var(--neon-green)">0</td><td><span class="stat-chip normal" style="font-size:11px">Owned</span></td></tr>
+          <tr><td>10</td><td style="color:var(--text-primary);font-weight:500">Waterproof Enclosure</td><td>Protects electronics</td><td style="color:var(--neon-cyan)">80</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
+          <tr><td>11</td><td style="color:var(--text-primary);font-weight:500">Breadboard + Jumper Wires</td><td>Circuit assembly</td><td style="color:var(--neon-cyan)">70</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
+          <tr>
+            <td colspan="3" style="text-align:right;font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text-secondary);letter-spacing:1px">TOTAL COST</td>
+            <td style="font-family:var(--font-display);font-size:18px;font-weight:900;color:var(--neon-green)">₹1,259</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section class="section fade-in">
+    <div class="section-head">
+      <div class="section-label" style="margin-bottom:8px">Project Team</div>
+      <h2 class="section-title" style="font-size:28px">5-Member Team Split</h2>
+    </div>
+    <div class="team-grid">
+      <div class="glass-card team-card fade-in">
+        <div class="team-avatar">🔧</div>
+        <div class="team-name">Member 1</div>
+        <div class="team-role">Hardware Engineer</div>
+        <div class="team-tasks">
+          <span class="task-tag">Procurement</span>
+          <span class="task-tag">Wiring</span>
+          <span class="task-tag">Calibration</span>
+          <span class="task-tag">Enclosure</span>
+        </div>
+      </div>
+      <div class="glass-card team-card fade-in">
+        <div class="team-avatar">🐍</div>
+        <div class="team-name">Member 2</div>
+        <div class="team-role">Backend Developer</div>
+        <div class="team-tasks">
+          <span class="task-tag">HiveMQ</span>
+          <span class="task-tag">Flask</span>
+          <span class="task-tag">InfluxDB</span>
+          <span class="task-tag">Railway</span>
+        </div>
+      </div>
+      <div class="glass-card team-card fade-in" style="border-color:rgba(0,255,136,0.2)">
+        <div class="team-avatar" style="border-color:rgba(0,255,136,0.3);box-shadow:0 0 20px rgba(0,255,136,0.15)">🤖</div>
+        <div class="team-name" style="color:var(--neon-green)">You — Member 3</div>
+        <div class="team-role">ML + Frontend</div>
+        <div class="team-tasks">
+          <span class="task-tag">Isolation Forest</span>
+          <span class="task-tag">CPCB Data</span>
+          <span class="task-tag">Dashboard</span>
+          <span class="task-tag">Vercel</span>
+        </div>
+      </div>
+      <div class="glass-card team-card fade-in">
+        <div class="team-avatar">📡</div>
+        <div class="team-name">Member 4</div>
+        <div class="team-role">Firmware + Integration</div>
+        <div class="team-tasks">
+          <span class="task-tag">Arduino Code</span>
+          <span class="task-tag">ESP-01 MQTT</span>
+          <span class="task-tag">Twilio</span>
+          <span class="task-tag">E2E Testing</span>
+        </div>
+      </div>
+      <div class="glass-card team-card fade-in">
+        <div class="team-avatar">📋</div>
+        <div class="team-name">Member 5</div>
+        <div class="team-role">Project Lead</div>
+        <div class="team-tasks">
+          <span class="task-tag">Documentation</span>
+          <span class="task-tag">Testing</span>
+          <span class="task-tag">Presentation</span>
+          <span class="task-tag">Coordination</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REFERENCES -->
+  <section class="section fade-in">
+    <div class="section-head">
+      <div class="section-label" style="margin-bottom:8px">Academic Foundation</div>
+      <h2 class="section-title" style="font-size:28px">Research References</h2>
+    </div>
+    <div class="refs-grid">
+      <div class="glass-card ref-card fade-in">
+        <div class="ref-num">[1]</div>
+        <div>
+          <div class="ref-title">Jayaraman et al. — IoT + ML for Water Quality Review</div>
+          <div class="ref-meta">International Journal of Intelligent Systems · April 2024</div>
+        </div>
+      </div>
+      <div class="glass-card ref-card fade-in">
+        <div class="ref-num">[2]</div>
+        <div>
+          <div class="ref-title">IoT Real-Time Water Quality in Treatment Plants</div>
+          <div class="ref-meta">Heliyon · November 2024 · PMC11652906</div>
+        </div>
+      </div>
+      <div class="glass-card ref-card fade-in">
+        <div class="ref-num">[3]</div>
+        <div>
+          <div class="ref-title">Essamlali et al. — ML + IoT Water Quality Review</div>
+          <div class="ref-meta">Heliyon · March 2024 · PMC10963334</div>
+        </div>
+      </div>
+      <div class="glass-card ref-card fade-in">
+        <div class="ref-num">[4]</div>
+        <div>
+          <div class="ref-title">Lal et al. — Low-Cost IoT Lake Water Quality</div>
+          <div class="ref-meta">PLOS ONE · March 2024 · pone.0299089</div>
+        </div>
+      </div>
+      <div class="glass-card ref-card fade-in">
+        <div class="ref-num">[5]</div>
+        <div>
+          <div class="ref-title">ESP32 + TinyML Water Quality — 99.28% Accuracy</div>
+          <div class="ref-meta">Scientific Reports · 2025 · s41598-026-37287-3</div>
+        </div>
+      </div>
+      <div class="glass-card ref-card fade-in">
+        <div class="ref-num">[6]</div>
+        <div>
+          <div class="ref-title">IoT Water Quality Monitoring — Critical Review</div>
+          <div class="ref-meta">MDPI Sensors · January 2023 · sensors-23-00960</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>AquaWatch — River Pollution Monitor · Semester 2 IoT Project · 2025–2026</span>
+    <span style="color:var(--neon-teal)">Built with ❤️ and ₹1,259</span>
+  </footer>
+</div>
+
+</body>
+</html>

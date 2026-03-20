@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Dashboard — AquaWatch</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    .dash-header {
+      padding: 40px 40px 24px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .dash-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .dash-subtitle { font-size: 14px; color: var(--text-muted); }
+
+    .dash-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .refresh-timer {
+      font-family: var(--font-display);
+      font-size: 11px;
+      color: var(--neon-teal);
+      padding: 6px 14px;
+      border: 1px solid rgba(0,212,170,0.25);
+      border-radius: 100px;
+      letter-spacing: 1px;
+    }
+
+    /* ── READING CARDS ROW ───────────────────────────── */
+    .readings-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      padding: 0 40px 24px;
+    }
+
+    /* ── MAIN LAYOUT ─────────────────────────────────── */
+    .dash-main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 0 40px 24px;
+    }
+
+    /* ── MAP ─────────────────────────────────────────── */
+    #map {
+      height: 360px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    /* Override leaflet default styles for dark theme */
+    .leaflet-container { background: #041525; }
+    .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.85) saturate(0.7); }
+
+    .map-legend {
+      padding: 14px 20px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--glass-border);
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    /* ── MINI CHART ──────────────────────────────────── */
+    .mini-chart-container { height: 200px; }
+
+    /* ── BOTTOM ROW ──────────────────────────────────── */
+    .dash-bottom {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      padding: 0 40px 40px;
+    }
+
+    /* ── GAUGE ───────────────────────────────────────── */
+    .gauge-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+    }
+    .gauge-label-top {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    canvas.gauge { display: block; }
+    .gauge-reading {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+    .gauge-unit { font-size: 12px; color: var(--text-muted); }
+
+    /* ── LATEST EVENTS ───────────────────────────────── */
+    .event-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .event-item:last-child { border-bottom: none; }
+    .event-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .event-time { font-size: 11px; color: var(--text-muted); }
+    .event-msg  { font-size: 13px; color: var(--text-secondary); }
+
+    /* ── ANOMALY SCORE RING ──────────────────────────── */
+    .score-ring-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      gap: 10px;
+    }
+    .score-value {
+      font-family: var(--font-display);
+      font-size: 48px;
+      font-weight: 900;
+      text-align: center;
+    }
+    .score-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .score-severity {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 6px 16px;
+      border-radius: 100px;
+      border: 1px solid;
+    }
+
+    @media (max-width: 1100px) {
+      .readings-row { grid-template-columns: 1fr 1fr; }
+      .dash-main    { grid-template-columns: 1fr; }
+      .dash-bottom  { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">🌊</div>
+    <div>
+      <div class="nav-logo-text">AQUAWATCH</div>
+      <div class="nav-logo-sub">River Pollution Monitor</div>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">🏠 Home</a></li>
+    <li><a href="dashboard.html" class="active">📡 Dashboard</a></li>
+    <li><a href="history.html">📊 History</a></li>
+    <li><a href="alerts.html">⚠️ Alerts</a></li>
+    <li><a href="about.html">ℹ️ About</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="status-dot" id="nav-dot"></div>
+    <span id="nav-status">Connecting...</span>
+  </div>
+</nav>
+
+<!-- ALERT TICKER -->
+<div class="alert-ticker" id="alert-ticker">
+  <span>🚨</span>
+  <strong>POLLUTION ANOMALY DETECTED</strong>
+  <span id="ticker-details"></span>
+</div>
+
+<div class="page" id="main-page">
+
+  <!-- HEADER -->
+  <div class="dash-header fade-in">
+    <div>
+      <div class="dash-title">Live Dashboard</div>
+      <div class="dash-subtitle">Node 1 · Sensor readings update every 30 seconds</div>
+    </div>
+    <div class="dash-controls">
+      <span class="live-badge"><span class="live-dot"></span>LIVE</span>
+      <span class="refresh-timer" id="countdown">30s</span>
+      <a href="history.html" class="btn btn-ghost" style="padding:8px 18px;font-size:10px">View History →</a>
+    </div>
+  </div>
+
+  <!-- READING CARDS -->
+  <div class="readings-row">
+    <div class="glass-card reading-card fade-in" style="--card-accent: var(--neon-cyan)">
+      <div class="reading-label">Total Dissolved Solids</div>
+      <div class="reading-value" id="val-tds">--</div>
+      <div class="reading-unit">ppm</div>
+      <div class="reading-range">Safe: 0 – 500 ppm</div>
+    </div>
+    <div class="glass-card reading-card fade-in" style="--card-accent: var(--neon-amber)">
+      <div class="reading-label">Water Temperature</div>
+      <div class="reading-value" id="val-temp">--</div>
+      <div class="reading-unit">°C</div>
+      <div class="reading-range">Normal: 15 – 35 °C</div>
+    </div>
+    <div class="glass-card reading-card fade-in" style="--card-accent: var(--neon-teal)">
+      <div class="reading-label">pH Level</div>
+      <div class="reading-value" id="val-ph">--</div>
+      <div class="reading-unit">pH</div>
+      <div class="reading-range">Safe: 6.5 – 8.5</div>
+    </div>
+    <div class="glass-card reading-card fade-in" style="--card-accent: var(--neon-green)" id="status-card">
+      <div class="reading-label">System Status</div>
+      <div class="reading-value" id="val-status" style="font-size:22px">--</div>
+      <div class="reading-unit" id="val-time">--</div>
+      <div class="reading-range" id="val-score">Score: --</div>
+    </div>
+  </div>
+
+  <!-- MAP + CHART -->
+  <div class="dash-main">
+    <div class="glass-card fade-in" style="overflow:hidden">
+      <div style="padding:16px 20px 12px; border-bottom:1px solid var(--glass-border); display:flex; justify-content:space-between; align-items:center">
+        <span style="font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:1px;color:var(--text-secondary)">SENSOR NODE LOCATION</span>
+        <div class="map-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--neon-green);box-shadow:0 0 6px var(--neon-green)"></div>Normal</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--neon-amber);box-shadow:0 0 6px var(--neon-amber)"></div>Elevated</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--neon-red);box-shadow:0 0 6px var(--neon-red)"></div>Critical</div>
+        </div>
+      </div>
+      <div id="map"></div>
+    </div>
+
+    <div class="glass-card fade-in" style="padding:20px">
+      <div style="font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:1px;color:var(--text-secondary);margin-bottom:16px">TDS — LAST 2 HOURS</div>
+      <div class="mini-chart-container">
+        <canvas id="tds-mini"></canvas>
+      </div>
+      <div class="neon-divider"></div>
+      <div style="font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:1px;color:var(--text-secondary);margin-bottom:16px">pH — LAST 2 HOURS</div>
+      <div class="mini-chart-container">
+        <canvas id="ph-mini"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM ROW -->
+  <div class="dash-bottom">
+
+    <!-- Anomaly Score -->
+    <div class="glass-card score-ring-wrap fade-in">
+      <div class="score-label">ML Anomaly Score</div>
+      <canvas id="score-gauge" width="160" height="160"></canvas>
+      <div class="score-value neon-text" id="score-display">0.00</div>
+      <div class="score-label">out of 1.00</div>
+      <div class="score-severity normal" id="score-badge" style="color:var(--neon-green);border-color:rgba(0,255,136,0.3);background:rgba(0,255,136,0.06)">NORMAL</div>
+    </div>
+
+    <!-- Temp Gauge -->
+    <div class="glass-card gauge-wrap fade-in">
+      <div class="gauge-label-top">Temperature Trend</div>
+      <div class="mini-chart-container" style="width:100%">
+        <canvas id="temp-mini"></canvas>
+      </div>
+      <div class="gauge-reading neon-text" id="temp-display" style="color:var(--neon-amber);text-shadow:0 0 15px rgba(255,170,0,0.4)">--</div>
+      <div class="gauge-unit">degrees Celsius</div>
+    </div>
+
+    <!-- Recent Events -->
+    <div class="glass-card fade-in" style="padding:24px">
+      <div style="font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:1px;color:var(--text-secondary);margin-bottom:16px">RECENT EVENTS</div>
+      <div id="events-list">
+        <div class="event-item">
+          <div class="event-icon" style="background:rgba(0,255,136,0.08)">✅</div>
+          <div>
+            <div class="event-msg">System started monitoring</div>
+            <div class="event-time">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>AquaWatch Live Dashboard · Auto-refreshes every 30s</span>
+    <a href="alerts.html" style="color:var(--neon-teal);text-decoration:none">View all anomaly history →</a>
+  </footer>
+</div>
+
+<script>
+const API = 'https://your-backend.up.railway.app'; // ← change to Railway URL
+const SENSOR_LAT  = 18.5204;
+const SENSOR_LNG  = 73.8567;
+const SENSOR_NAME = 'Node 1 — Monitoring Point';
+
+// ── MAP ──────────────────────────────────────────────────
+const map = L.map('map', { zoomControl: true, attributionControl: false })
+              .setView([SENSOR_LAT, SENSOR_LNG], 15);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+let markerColor = '#00ff88';
+const sensorMarker = L.circleMarker([SENSOR_LAT, SENSOR_LNG], {
+  radius: 14, fillColor: markerColor, color: '#fff',
+  weight: 2, opacity: 1, fillOpacity: 0.9
+}).addTo(map);
+sensorMarker.bindPopup('<b>' + SENSOR_NAME + '</b>');
+
+// ── CHARTS ───────────────────────────────────────────────
+const chartOpts = (color, unit) => ({
+  type: 'line',
+  data: { labels: [], datasets: [{ data: [], borderColor: color,
+    backgroundColor: color + '18', borderWidth: 2, fill: true, tension: 0.4, pointRadius: 2 }] },
+  options: {
+    responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { color: '#3d6a7a', maxTicksLimit: 5, font: { size: 10 } }, grid: { color: 'rgba(0,245,255,0.04)' } },
+      y: { ticks: { color: '#3d6a7a', font: { size: 10 } }, grid: { color: 'rgba(0,245,255,0.04)' },
+           title: { display: true, text: unit, color: '#3d6a7a', font: { size: 10 } } }
+    }
+  }
+});
+
+const tdsChart  = new Chart(document.getElementById('tds-mini').getContext('2d'),  chartOpts('#00f5ff','ppm'));
+const phChart   = new Chart(document.getElementById('ph-mini').getContext('2d'),   chartOpts('#00d4aa','pH'));
+const tempChart = new Chart(document.getElementById('temp-mini').getContext('2d'), chartOpts('#ffaa00','°C'));
+
+// ── SCORE GAUGE (canvas arc) ─────────────────────────────
+function drawScoreGauge(score) {
+  const canvas = document.getElementById('score-gauge');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,160,160);
+  const cx=80,cy=80,r=65,sw=10;
+  // bg arc
+  ctx.beginPath(); ctx.arc(cx,cy,r, 0.75*Math.PI, 2.25*Math.PI);
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = sw;
+  ctx.lineCap = 'round'; ctx.stroke();
+  // value arc
+  const color = score >= 0.85 ? '#ff3366' : score >= 0.60 ? '#ffaa00' : '#00ff88';
+  const end = 0.75*Math.PI + score * 1.5 * Math.PI;
+  ctx.beginPath(); ctx.arc(cx,cy,r, 0.75*Math.PI, end);
+  ctx.strokeStyle = color; ctx.lineWidth = sw;
+  ctx.lineCap = 'round'; ctx.stroke();
+  // glow
+  ctx.beginPath(); ctx.arc(cx,cy,r, 0.75*Math.PI, end);
+  ctx.strokeStyle = color + '40'; ctx.lineWidth = sw + 8;
+  ctx.lineCap = 'round'; ctx.stroke();
+}
+drawScoreGauge(0);
+
+// ── EVENTS LOG ───────────────────────────────────────────
+const eventsLog = [];
+function addEvent(icon, bg, msg) {
+  eventsLog.unshift({ icon, bg, msg, time: new Date().toLocaleTimeString() });
+  if (eventsLog.length > 5) eventsLog.pop();
+  const el = document.getElementById('events-list');
+  el.innerHTML = eventsLog.map(e => `
+    <div class="event-item">
+      <div class="event-icon" style="background:${e.bg}">${e.icon}</div>
+      <div>
+        <div class="event-msg">${e.msg}</div>
+        <div class="event-time">${e.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── FETCH LATEST ─────────────────────────────────────────
+async function fetchLatest() {
+  try {
+    const data = await fetch(API + '/api/latest').then(r => r.json());
+    const tds  = data.tds         ?? 0;
+    const temp = data.temperature ?? 0;
+    const ph   = data.ph          ?? 7;
+    const score= data.anomaly_score ?? 0;
+    const bad  = data.is_anomaly === 1;
+
+    document.getElementById('val-tds').textContent   = tds.toFixed(1);
+    document.getElementById('val-temp').textContent  = temp.toFixed(1);
+    document.getElementById('val-ph').textContent    = ph.toFixed(2);
+    document.getElementById('temp-display').textContent = temp.toFixed(1);
+    document.getElementById('val-time').textContent  = new Date().toLocaleTimeString();
+    document.getElementById('val-score').textContent = 'Score: ' + score.toFixed(3);
+    document.getElementById('score-display').textContent = score.toFixed(3);
+
+    // status
+    let statusTxt, statusColor, markerFill;
+    if (score >= 0.85)      { statusTxt = '🔴 CRITICAL'; statusColor = 'var(--neon-red)';   markerFill = '#ff3366'; }
+    else if (score >= 0.60) { statusTxt = '🟡 ELEVATED'; statusColor = 'var(--neon-amber)'; markerFill = '#ffaa00'; }
+    else                    { statusTxt = '🟢 NORMAL';   statusColor = 'var(--neon-green)'; markerFill = '#00ff88'; }
+
+    document.getElementById('val-status').textContent = statusTxt;
+    document.getElementById('val-status').style.color = statusColor;
+    document.getElementById('status-card').style.setProperty('--card-accent', statusColor);
+
+    const badge = document.getElementById('score-badge');
+    if (score >= 0.85) {
+      badge.textContent = 'CRITICAL';
+      badge.style.color = 'var(--neon-red)'; badge.style.borderColor = 'rgba(255,51,102,0.4)'; badge.style.background = 'rgba(255,51,102,0.08)';
+    } else if (score >= 0.60) {
+      badge.textContent = 'ELEVATED';
+      badge.style.color = 'var(--neon-amber)'; badge.style.borderColor = 'rgba(255,170,0,0.4)'; badge.style.background = 'rgba(255,170,0,0.08)';
+    } else {
+      badge.textContent = 'NORMAL';
+      badge.style.color = 'var(--neon-green)'; badge.style.borderColor = 'rgba(0,255,136,0.3)'; badge.style.background = 'rgba(0,255,136,0.06)';
+    }
+
+    sensorMarker.setStyle({ fillColor: markerFill });
+    drawScoreGauge(score);
+
+    // alert ticker
+    const ticker = document.getElementById('alert-ticker');
+    if (bad) {
+      ticker.classList.add('visible');
+      document.getElementById('ticker-details').textContent =
+        `TDS: ${tds.toFixed(0)} ppm · Temp: ${temp.toFixed(1)}°C · pH: ${ph.toFixed(2)} · Score: ${score.toFixed(2)}`;
+      document.getElementById('nav-dot').classList.add('alert');
+      document.getElementById('nav-status').textContent = 'ANOMALY DETECTED';
+      addEvent('🚨', 'rgba(255,51,102,0.1)', `Anomaly detected — score ${score.toFixed(3)}`);
+    } else {
+      ticker.classList.remove('visible');
+      document.getElementById('nav-dot').classList.remove('alert');
+      document.getElementById('nav-status').textContent = 'System Online';
+      addEvent('📡', 'rgba(0,245,255,0.08)', `Reading: TDS ${tds.toFixed(0)} ppm, pH ${ph.toFixed(2)}`);
+    }
+
+  } catch(e) {
+    document.getElementById('nav-dot').classList.add('offline');
+    document.getElementById('nav-status').textContent = 'Offline';
+    addEvent('⚠️', 'rgba(255,170,0,0.1)', 'Failed to fetch data from backend');
+  }
+}
+
+// ── FETCH HISTORY FOR MINI CHARTS ───────────────────────
+async function fetchHistory() {
+  try {
+    const history = await fetch(API + '/api/history').then(r => r.json());
+    const recent  = history.slice(-24); // last 24 data points
+    const labels  = recent.map(r => new Date(r.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+
+    tdsChart.data.labels  = labels; tdsChart.data.datasets[0].data  = recent.map(r => r.tds);        tdsChart.update();
+    phChart.data.labels   = labels; phChart.data.datasets[0].data   = recent.map(r => r.ph);         phChart.update();
+    tempChart.data.labels = labels; tempChart.data.datasets[0].data = recent.map(r => r.temperature); tempChart.update();
+  } catch(e) {}
+}
+
+// ── COUNTDOWN TIMER ──────────────────────────────────────
+let countdown = 30;
+function tick() {
+  document.getElementById('countdown').textContent = countdown + 's';
+  countdown--;
+  if (countdown < 0) { countdown = 30; fetchLatest(); }
+}
+
+// ── INIT ─────────────────────────────────────────────────
+fetchLatest();
+fetchHistory();
+setInterval(tick, 1000);
+setInterval(fetchHistory, 5 * 60 * 1000);
+</script>
+</body>
+</html>
