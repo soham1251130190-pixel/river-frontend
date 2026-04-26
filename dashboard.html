@@ -45,6 +45,13 @@
       border: 1px solid rgba(0, 212, 170, 0.25);
       border-radius: 100px;
       letter-spacing: 1px;
+      transition: transform 0.2s, background 0.2s;
+      cursor: default;
+    }
+
+    .refresh-timer:hover {
+      background: rgba(0, 212, 170, 0.08);
+      transform: scale(1.05);
     }
 
     /* ── READING CARDS ROW ───────────────────────────── */
@@ -153,6 +160,13 @@
       gap: 12px;
       padding: 12px 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      transition: transform 0.25s ease, padding-left 0.25s;
+      cursor: default;
+    }
+
+    .event-item:hover {
+      transform: translateX(6px);
+      padding-left: 4px;
     }
 
     .event-item:last-child {
@@ -168,6 +182,11 @@
       justify-content: center;
       font-size: 14px;
       flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+
+    .event-item:hover .event-icon {
+      transform: scale(1.15);
     }
 
     .event-time {
@@ -212,6 +231,12 @@
       padding: 6px 16px;
       border-radius: 100px;
       border: 1px solid;
+      transition: transform 0.3s ease, box-shadow 0.3s;
+      cursor: default;
+    }
+
+    .score-severity:hover {
+      transform: scale(1.05);
     }
 
     @media (max-width: 1100px) {
@@ -314,15 +339,15 @@
             NODE LOCATION</span>
           <div class="map-legend">
             <div class="legend-item">
-              <div class="legend-dot" style="background:var(--neon-green);box-shadow:0 0 6px var(--neon-green)"></div>
+              <div class="legend-dot" style="background:var(--neon-green)"></div>
               Normal
             </div>
             <div class="legend-item">
-              <div class="legend-dot" style="background:var(--neon-amber);box-shadow:0 0 6px var(--neon-amber)"></div>
+              <div class="legend-dot" style="background:var(--neon-amber)"></div>
               Elevated
             </div>
             <div class="legend-item">
-              <div class="legend-dot" style="background:var(--neon-red);box-shadow:0 0 6px var(--neon-red)"></div>
+              <div class="legend-dot" style="background:var(--neon-red)"></div>
               Critical
             </div>
           </div>
@@ -367,7 +392,7 @@
           <canvas id="temp-mini"></canvas>
         </div>
         <div class="gauge-reading neon-text" id="temp-display"
-          style="color:var(--neon-amber);text-shadow:0 0 15px rgba(255,170,0,0.4)">--</div>
+          style="color:var(--neon-amber)">--</div>
         <div class="gauge-unit">degrees Celsius</div>
       </div>
 

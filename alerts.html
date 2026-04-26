@@ -49,25 +49,25 @@
 
     .filter-btn:hover {
       color: var(--neon-cyan);
-      border-color: rgba(0, 245, 255, 0.25);
+      border-color: rgba(94, 196, 212, 0.25);
     }
 
     .filter-btn.active {
-      background: rgba(0, 245, 255, 0.08);
+      background: rgba(94, 196, 212, 0.08);
       color: var(--neon-cyan);
-      border-color: rgba(0, 245, 255, 0.3);
+      border-color: rgba(94, 196, 212, 0.3);
     }
 
     .filter-btn.f-critical.active {
-      background: rgba(255, 51, 102, 0.08);
+      background: rgba(212, 87, 106, 0.08);
       color: var(--neon-red);
-      border-color: rgba(255, 51, 102, 0.3);
+      border-color: rgba(212, 87, 106, 0.3);
     }
 
     .filter-btn.f-elevated.active {
-      background: rgba(255, 170, 0, 0.08);
+      background: rgba(212, 162, 74, 0.08);
       color: var(--neon-amber);
-      border-color: rgba(255, 170, 0, 0.3);
+      border-color: rgba(212, 162, 74, 0.3);
     }
 
     /* ── STATS ROW ──────────────────────────────────── */
@@ -108,11 +108,12 @@
       padding: 0;
       overflow: hidden;
       cursor: pointer;
-      transition: all 0.25s;
+      transition: all 0.3s cubic-bezier(.22,.68,0,1.2);
     }
 
     .alert-card:hover {
-      transform: translateX(4px);
+      transform: translateX(6px) translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 0 0 1px rgba(94,196,212,0.08);
     }
 
     .alert-card-inner {
@@ -265,6 +266,12 @@
       position: relative;
       margin-bottom: 24px;
       padding: 16px 20px;
+      transition: transform 0.3s ease, border-color 0.3s;
+    }
+
+    .timeline-item:hover {
+      transform: translateX(6px);
+      border-color: rgba(94,196,212,0.3);
     }
 
     .timeline-dot {
@@ -276,12 +283,10 @@
       border-radius: 50%;
       border: 2px solid var(--neon-red);
       background: var(--bg-deep);
-      box-shadow: 0 0 8px var(--neon-red);
     }
 
     .timeline-dot.elevated {
       border-color: var(--neon-amber);
-      box-shadow: 0 0 8px var(--neon-amber);
     }
 
     .timeline-time {
@@ -309,6 +314,12 @@
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.07);
       color: var(--text-muted);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .tval:hover {
+      background: rgba(94,196,212,0.08);
+      color: var(--text-secondary);
     }
 
     @media (max-width: 900px) {
@@ -489,7 +500,7 @@
         return `
     <div class="glass-card alert-card fade-in" style="animation-delay:${i * 0.06}s">
       <div class="alert-card-inner">
-        <div class="alert-severity-bar" style="background:${color};box-shadow:0 0 8px ${color}"></div>
+        <div class="alert-severity-bar" style="background:${color}"></div>
         <div class="alert-content">
           <div>
             <div class="alert-top">
@@ -517,7 +528,7 @@
             </div>
           </div>
           <div class="alert-score-display">
-            <div class="alert-score-num" style="color:${color};text-shadow:0 0 15px ${color}">${score.toFixed(2)}</div>
+            <div class="alert-score-num" style="color:${color}">${score.toFixed(2)}</div>
             <div class="alert-score-label">Anomaly Score</div>
           </div>
         </div>

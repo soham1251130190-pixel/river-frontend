@@ -23,8 +23,8 @@
       position: absolute;
       inset: 0;
       background-image:
-        linear-gradient(rgba(0, 245, 255, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 245, 255, 0.04) 1px, transparent 1px);
+        linear-gradient(rgba(120, 160, 180, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120, 160, 180, 0.04) 1px, transparent 1px);
       background-size: 60px 60px;
       mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 70%);
       pointer-events: none;
@@ -45,7 +45,7 @@
     .hero-eyebrow-line {
       width: 40px;
       height: 1px;
-      background: linear-gradient(90deg, var(--neon-cyan), transparent);
+      background: var(--neon-cyan);
     }
 
     .hero-title {
@@ -62,13 +62,11 @@
 
     .hero-title .line2 {
       color: var(--neon-cyan);
-      text-shadow: 0 0 30px rgba(0, 245, 255, 0.5), 0 0 60px rgba(0, 245, 255, 0.2);
       display: block;
     }
 
     .hero-title .line3 {
       color: var(--neon-teal);
-      text-shadow: 0 0 30px rgba(0, 212, 170, 0.4);
       display: block;
     }
 
@@ -107,12 +105,8 @@
       width: 200px;
       height: 200px;
       border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, rgba(0, 245, 255, 0.15), rgba(0, 212, 170, 0.05));
-      border: 1px solid rgba(0, 245, 255, 0.25);
-      box-shadow:
-        0 0 40px rgba(0, 245, 255, 0.15),
-        0 0 100px rgba(0, 245, 255, 0.05),
-        inset 0 0 40px rgba(0, 245, 255, 0.05);
+      background: rgba(94, 196, 212, 0.08);
+      border: 1px solid rgba(94, 196, 212, 0.2);
       animation: orbFloat 4s ease-in-out infinite;
     }
 
@@ -123,7 +117,7 @@
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 60px;
-      filter: drop-shadow(0 0 15px rgba(0, 245, 255, 0.6));
+
     }
 
     .orbit-ring {
@@ -131,7 +125,7 @@
       top: 50%;
       left: 50%;
       border-radius: 50%;
-      border: 1px solid rgba(0, 245, 255, 0.12);
+      border: 1px solid rgba(94, 196, 212, 0.1);
       transform: translate(-50%, -50%);
     }
 
@@ -145,14 +139,14 @@
       width: 360px;
       height: 360px;
       animation: orbitRotate 13s linear infinite reverse;
-      border-color: rgba(0, 212, 170, 0.1);
+      border-color: rgba(77, 184, 158, 0.1);
     }
 
     .orbit-ring:nth-child(3) {
       width: 420px;
       height: 420px;
       animation: orbitRotate 20s linear infinite;
-      border-color: rgba(0, 144, 255, 0.07);
+      border-color: rgba(74, 154, 212, 0.07);
     }
 
     .orbit-dot {
@@ -161,7 +155,6 @@
       height: 8px;
       border-radius: 50%;
       background: var(--neon-cyan);
-      box-shadow: 0 0 10px var(--neon-cyan);
       top: -4px;
       left: 50%;
       transform: translateX(-50%);
@@ -203,14 +196,19 @@
 
     .stat-block {
       padding: 28px 24px;
-      background: var(--glass-bg);
-      backdrop-filter: blur(12px);
+      background: var(--bg-surface);
       text-align: center;
-      transition: background 0.3s;
+      transition: background 0.3s, transform 0.3s;
+      cursor: default;
     }
 
     .stat-block:hover {
-      background: var(--glass-hover);
+      background: rgba(94,196,212,0.06);
+    }
+
+    .stat-block:hover .stat-num {
+      transform: scale(1.12);
+      filter: brightness(1.15);
     }
 
     .stat-num {
@@ -218,8 +216,8 @@
       font-size: 32px;
       font-weight: 700;
       color: var(--neon-cyan);
-      text-shadow: 0 0 15px rgba(0, 245, 255, 0.4);
       margin-bottom: 6px;
+      transition: transform 0.35s cubic-bezier(.22,.68,0,1.2), filter 0.35s;
     }
 
     .stat-label {
@@ -247,6 +245,21 @@
     .feature-card {
       padding: 32px 28px;
       cursor: default;
+      transition: transform 0.35s cubic-bezier(.22,.68,0,1.2), border-color 0.35s, box-shadow 0.35s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(94,196,212,0.35);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(94,196,212,0.1);
+    }
+
+    .feature-card:hover .feature-icon {
+      transform: scale(1.15) rotate(-4deg);
+    }
+
+    .feature-card:hover .feature-title {
+      color: var(--neon-cyan);
     }
 
     .feature-icon {
@@ -259,6 +272,7 @@
       font-size: 24px;
       margin-bottom: 20px;
       position: relative;
+      transition: transform 0.35s cubic-bezier(.22,.68,0,1.2);
     }
 
     .feature-icon::after {
@@ -270,33 +284,33 @@
     }
 
     .fi-cyan {
-      background: rgba(0, 245, 255, 0.1);
-      border: 1px solid rgba(0, 245, 255, 0.2);
+      background: rgba(94, 196, 212, 0.1);
+      border: 1px solid rgba(94, 196, 212, 0.2);
     }
 
     .fi-teal {
-      background: rgba(0, 212, 170, 0.1);
-      border: 1px solid rgba(0, 212, 170, 0.2);
+      background: rgba(77, 184, 158, 0.1);
+      border: 1px solid rgba(77, 184, 158, 0.2);
     }
 
     .fi-blue {
-      background: rgba(0, 144, 255, 0.1);
-      border: 1px solid rgba(0, 144, 255, 0.2);
+      background: rgba(74, 154, 212, 0.1);
+      border: 1px solid rgba(74, 154, 212, 0.2);
     }
 
     .fi-green {
-      background: rgba(0, 255, 136, 0.1);
-      border: 1px solid rgba(0, 255, 136, 0.2);
+      background: rgba(74, 212, 138, 0.1);
+      border: 1px solid rgba(74, 212, 138, 0.2);
     }
 
     .fi-amber {
-      background: rgba(255, 170, 0, 0.1);
-      border: 1px solid rgba(255, 170, 0, 0.2);
+      background: rgba(212, 162, 74, 0.1);
+      border: 1px solid rgba(212, 162, 74, 0.2);
     }
 
     .fi-red {
-      background: rgba(255, 51, 102, 0.1);
-      border: 1px solid rgba(255, 51, 102, 0.2);
+      background: rgba(212, 87, 106, 0.1);
+      border: 1px solid rgba(212, 87, 106, 0.2);
     }
 
     .feature-title {
@@ -306,6 +320,7 @@
       color: var(--text-primary);
       margin-bottom: 10px;
       letter-spacing: 0.5px;
+      transition: color 0.3s;
     }
 
     .feature-desc {
@@ -335,6 +350,28 @@
       padding: 24px 16px;
       text-align: center;
       position: relative;
+      border-radius: var(--radius-md);
+      transition: background 0.3s, transform 0.3s cubic-bezier(.22,.68,0,1.2);
+      cursor: default;
+    }
+
+    .pipeline-step:hover {
+      background: rgba(94,196,212,0.05);
+      transform: translateY(-4px);
+    }
+
+    .pipeline-step:hover .pipeline-step-icon {
+      animation: iconBounce 0.5s ease;
+    }
+
+    .pipeline-step:hover .pipeline-step-name {
+      color: var(--neon-cyan);
+    }
+
+    @keyframes iconBounce {
+      0%, 100% { transform: translateY(0); }
+      40%  { transform: translateY(-8px); }
+      60%  { transform: translateY(-3px); }
     }
 
     .pipeline-step-num {
@@ -350,7 +387,6 @@
       font-size: 28px;
       margin-bottom: 10px;
       display: block;
-      filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.4));
     }
 
     .pipeline-step-name {
@@ -360,6 +396,7 @@
       color: var(--text-primary);
       letter-spacing: 0.5px;
       margin-bottom: 6px;
+      transition: color 0.3s;
     }
 
     .pipeline-step-desc {
@@ -369,10 +406,16 @@
     }
 
     .pipeline-arrow {
-      color: rgba(0, 245, 255, 0.3);
+      color: rgba(94, 196, 212, 0.3);
       font-size: 20px;
       flex-shrink: 0;
       padding: 0 4px;
+      transition: color 0.3s, transform 0.3s;
+    }
+
+    .pipeline-step:hover + .pipeline-arrow {
+      color: rgba(94,196,212,0.6);
+      transform: translateX(3px);
     }
   </style>
 </head>
@@ -432,7 +475,7 @@
           <div class="orbit-dot"></div>
         </div>
         <div class="orbit-ring">
-          <div class="orbit-dot" style="background:var(--neon-teal);box-shadow:0 0 10px var(--neon-teal)"></div>
+          <div class="orbit-dot" style="background:var(--neon-teal)"></div>
         </div>
         <div class="orbit-ring"></div>
         <div class="sensor-orb"></div>
@@ -447,17 +490,17 @@
           <div class="stat-label">Readings Today</div>
         </div>
         <div class="stat-block">
-          <div class="stat-num" style="color:var(--neon-teal);text-shadow:0 0 15px rgba(0,212,170,0.4)" id="stat-tds">--
+          <div class="stat-num" style="color:var(--neon-teal)" id="stat-tds">--
           </div>
           <div class="stat-label">Current TDS (ppm)</div>
         </div>
         <div class="stat-block">
-          <div class="stat-num" style="color:var(--neon-green);text-shadow:0 0 15px rgba(0,255,136,0.4)"
+          <div class="stat-num" style="color:var(--neon-green)"
             id="stat-status">--</div>
           <div class="stat-label">System Status</div>
         </div>
         <div class="stat-block">
-          <div class="stat-num" style="color:var(--neon-blue);text-shadow:0 0 15px rgba(0,144,255,0.4)"
+          <div class="stat-num" style="color:var(--neon-blue)"
             id="stat-anomalies">--</div>
           <div class="stat-label">Anomalies (7 days)</div>
         </div>
@@ -567,6 +610,79 @@
 
   <script>
     const API = 'https://river-backend-production-9764.up.railway.app';
+
+    /* ── ANIMATED COUNTER ────────────────────────────── */
+    function animateCounter(el, target, duration = 1200) {
+      const start = 0;
+      const startTime = performance.now();
+      const isInt = Number.isInteger(target);
+      function update(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        const current = start + (target - start) * eased;
+        el.textContent = isInt ? Math.round(current) : current.toFixed(0);
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    }
+
+    /* ── SCROLL REVEAL ───────────────────────────────── */
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.stats-bar, .features, .how-it-works, .feature-card, .pipeline').forEach(el => {
+      el.classList.add('reveal');
+      revealObserver.observe(el);
+    });
+
+    /* ── BUTTON RIPPLE TRACKING ──────────────────────── */
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('mousemove', e => {
+        const rect = btn.getBoundingClientRect();
+        btn.style.setProperty('--ripple-x', ((e.clientX - rect.left) / rect.width * 100) + '%');
+        btn.style.setProperty('--ripple-y', ((e.clientY - rect.top) / rect.height * 100) + '%');
+      });
+    });
+
+    /* ── HERO VISUAL TILT ON MOUSE ───────────────────── */
+    const heroVisual = document.querySelector('.hero-visual');
+    const hero = document.querySelector('.hero');
+    if (hero && heroVisual) {
+      hero.addEventListener('mousemove', e => {
+        const rect = hero.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        heroVisual.style.transform = `translateY(-50%) perspective(800px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg)`;
+      });
+      hero.addEventListener('mouseleave', () => {
+        heroVisual.style.transform = 'translateY(-50%)';
+        heroVisual.style.transition = 'transform 0.5s ease';
+        setTimeout(() => heroVisual.style.transition = '', 500);
+      });
+    }
+
+    /* ── FEATURE CARD TILT ───────────────────────────── */
+    document.querySelectorAll('.feature-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `translateY(-6px) perspective(600px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        card.style.transition = 'transform 0.4s ease';
+        setTimeout(() => card.style.transition = '', 400);
+      });
+    });
+
+    /* ── LOAD STATS ──────────────────────────────────── */
     async function loadHomeStats() {
       try {
         const [latestRes, anomalyRes] = await Promise.all([
@@ -576,8 +692,15 @@
         const latest = await latestRes.json();
         const anomalies = await anomalyRes.json();
 
-        document.getElementById('stat-tds').textContent = latest.tds ? latest.tds.toFixed(0) : '--';
-        document.getElementById('stat-anomalies').textContent = anomalies.length || '0';
+        // Animated counters
+        const tdsEl = document.getElementById('stat-tds');
+        const anomalyEl = document.getElementById('stat-anomalies');
+        const readingsEl = document.getElementById('stat-readings');
+
+        if (latest.tds) animateCounter(tdsEl, Math.round(latest.tds));
+        else tdsEl.textContent = '--';
+
+        animateCounter(anomalyEl, anomalies.length || 0);
 
         const isAnomaly = latest.is_anomaly === 1;
         document.getElementById('stat-status').textContent = isAnomaly ? 'ALERT' : 'NORMAL';
@@ -590,9 +713,8 @@
           document.getElementById('nav-status-text').textContent = 'System Online';
         }
 
-        // Estimate readings today
         const todayReadings = Math.floor((new Date().getHours() * 60 + new Date().getMinutes()) / 0.5);
-        document.getElementById('stat-readings').textContent = todayReadings;
+        animateCounter(readingsEl, todayReadings);
 
       } catch (e) {
         document.getElementById('nav-status-dot').classList.add('offline');

@@ -24,12 +24,23 @@
     .about-stat {
       padding: 24px 20px;
       text-align: center;
+      cursor: default;
+      transition: transform 0.3s cubic-bezier(.22,.68,0,1.2);
+    }
+
+    .about-stat:hover {
+      transform: translateY(-4px);
+    }
+
+    .about-stat:hover .about-stat-num {
+      transform: scale(1.12);
     }
     .about-stat-num {
       font-family: var(--font-display);
       font-size: 36px;
       font-weight: 900;
       margin-bottom: 6px;
+      transition: transform 0.3s cubic-bezier(.22,.68,0,1.2);
     }
     .about-stat-label { font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; }
 
@@ -47,11 +58,28 @@
       display: flex;
       gap: 16px;
       align-items: flex-start;
+      cursor: default;
+      transition: transform 0.3s cubic-bezier(.22,.68,0,1.2), border-color 0.3s;
+    }
+
+    .stack-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(94,196,212,0.3);
+    }
+
+    .stack-card:hover .stack-icon {
+      animation: iconBounce 0.5s ease;
+    }
+
+    @keyframes iconBounce {
+      0%, 100% { transform: translateY(0); }
+      40%  { transform: translateY(-6px); }
+      60%  { transform: translateY(-2px); }
     }
     .stack-icon {
       font-size: 28px;
       flex-shrink: 0;
-      filter: drop-shadow(0 0 8px rgba(0,245,255,0.3));
+
     }
     .stack-name {
       font-family: var(--font-display);
@@ -82,6 +110,17 @@
     .team-card {
       padding: 28px 20px;
       text-align: center;
+      cursor: default;
+      transition: transform 0.3s cubic-bezier(.22,.68,0,1.2);
+    }
+
+    .team-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .team-card:hover .team-avatar {
+      border-color: var(--neon-cyan);
+      transform: scale(1.08);
     }
     .team-avatar {
       width: 64px; height: 64px;
@@ -91,7 +130,7 @@
       font-size: 28px;
       background: var(--glass-bg);
       border: 2px solid var(--glass-border);
-      box-shadow: 0 0 20px rgba(0,245,255,0.1);
+      transition: border-color 0.3s, transform 0.3s;
     }
     .team-name {
       font-family: var(--font-display);
@@ -107,8 +146,8 @@
       font-size: 10px;
       padding: 3px 8px;
       border-radius: 100px;
-      background: rgba(0,245,255,0.05);
-      border: 1px solid rgba(0,245,255,0.12);
+      background: rgba(94,196,212,0.05);
+      border: 1px solid rgba(94,196,212,0.12);
       color: var(--text-muted);
     }
 
@@ -135,7 +174,8 @@
       margin-bottom: 14px;
       align-items: flex-start;
     }
-    .ps-item-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+    .ps-item-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; transition: transform 0.3s; }
+    .ps-item:hover .ps-item-icon { transform: scale(1.2); }
     .ps-item-text { font-size: 14px; color: var(--text-secondary); line-height: 1.5; font-weight: 300; }
 
     /* ── REFERENCES ──────────────────────────────────── */
@@ -149,6 +189,16 @@
       display: flex;
       gap: 14px;
       align-items: flex-start;
+      cursor: default;
+      transition: transform 0.25s ease, padding-left 0.25s;
+    }
+
+    .ref-card:hover {
+      transform: translateX(6px);
+    }
+
+    .ref-card:hover .ref-num {
+      opacity: 1;
     }
     .ref-num {
       font-family: var(--font-display);
@@ -367,103 +417,7 @@
     </div>
   </section>
 
-  <!-- COMPONENTS TABLE -->
-  <section class="comp-section fade-in">
-    <div class="section-head">
-      <div class="section-label" style="margin-bottom:8px">Hardware Bill of Materials</div>
-      <h2 class="section-title" style="font-size:28px">Components — ₹1,259 Total</h2>
-    </div>
-    <div class="glass-card" style="overflow:hidden">
-      <table class="neon-table">
-        <thead>
-          <tr><th>#</th><th>Component</th><th>Purpose</th><th>Cost (₹)</th><th>Status</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>1</td><td style="color:var(--text-primary);font-weight:500">Arduino Uno</td><td>Main microcontroller</td><td style="color:var(--neon-green)">0</td><td><span class="stat-chip normal" style="font-size:11px">Owned</span></td></tr>
-          <tr><td>2</td><td style="color:var(--text-primary);font-weight:500">Bluecraft ESP-01</td><td>Wi-Fi + MQTT module</td><td style="color:var(--neon-cyan)">84</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
-          <tr><td>3</td><td style="color:var(--text-primary);font-weight:500">ESP-01 Adapter 3.3V/5V</td><td>Handles voltage level shifting</td><td style="color:var(--neon-cyan)">60</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
-          <tr><td>4</td><td style="color:var(--text-primary);font-weight:500">QBM TDS Sensor (gold-plated)</td><td>Measures dissolved solids</td><td style="color:var(--neon-cyan)">420</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
-          <tr><td>5</td><td style="color:var(--text-primary);font-weight:500">pH Sensor Module</td><td>Measures acidity/alkalinity</td><td style="color:var(--neon-cyan)">350</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
-          <tr><td>6</td><td style="color:var(--text-primary);font-weight:500">DS18B20 Waterproof Probe</td><td>Water temperature</td><td style="color:var(--neon-cyan)">80</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
-          <tr><td>7</td><td style="color:var(--text-primary);font-weight:500">CD4051 Multiplexer</td><td>Shares A0 between TDS + pH</td><td style="color:var(--neon-cyan)">15</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
-          <tr><td>8</td><td style="color:var(--text-primary);font-weight:500">pH Buffer Solutions (4.0 + 7.0)</td><td>Sensor calibration</td><td style="color:var(--neon-cyan)">100</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
-          <tr><td>9</td><td style="color:var(--text-primary);font-weight:500">USB Power Bank</td><td>Field power supply</td><td style="color:var(--neon-green)">0</td><td><span class="stat-chip normal" style="font-size:11px">Owned</span></td></tr>
-          <tr><td>10</td><td style="color:var(--text-primary);font-weight:500">Waterproof Enclosure</td><td>Protects electronics</td><td style="color:var(--neon-cyan)">80</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
-          <tr><td>11</td><td style="color:var(--text-primary);font-weight:500">Breadboard + Jumper Wires</td><td>Circuit assembly</td><td style="color:var(--neon-cyan)">70</td><td><span class="stat-chip normal" style="font-size:11px">Buy</span></td></tr>
-          <tr>
-            <td colspan="3" style="text-align:right;font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text-secondary);letter-spacing:1px">TOTAL COST</td>
-            <td style="font-family:var(--font-display);font-size:18px;font-weight:900;color:var(--neon-green)">₹1,259</td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
 
-  <!-- TEAM -->
-  <section class="section fade-in">
-    <div class="section-head">
-      <div class="section-label" style="margin-bottom:8px">Project Team</div>
-      <h2 class="section-title" style="font-size:28px">5-Member Team Split</h2>
-    </div>
-    <div class="team-grid">
-      <div class="glass-card team-card fade-in">
-        <div class="team-avatar">🔧</div>
-        <div class="team-name">Member 1</div>
-        <div class="team-role">Hardware Engineer</div>
-        <div class="team-tasks">
-          <span class="task-tag">Procurement</span>
-          <span class="task-tag">Wiring</span>
-          <span class="task-tag">Calibration</span>
-          <span class="task-tag">Enclosure</span>
-        </div>
-      </div>
-      <div class="glass-card team-card fade-in">
-        <div class="team-avatar">🐍</div>
-        <div class="team-name">Member 2</div>
-        <div class="team-role">Backend Developer</div>
-        <div class="team-tasks">
-          <span class="task-tag">HiveMQ</span>
-          <span class="task-tag">Flask</span>
-          <span class="task-tag">InfluxDB</span>
-          <span class="task-tag">Railway</span>
-        </div>
-      </div>
-      <div class="glass-card team-card fade-in" style="border-color:rgba(0,255,136,0.2)">
-        <div class="team-avatar" style="border-color:rgba(0,255,136,0.3);box-shadow:0 0 20px rgba(0,255,136,0.15)">🤖</div>
-        <div class="team-name" style="color:var(--neon-green)">You — Member 3</div>
-        <div class="team-role">ML + Frontend</div>
-        <div class="team-tasks">
-          <span class="task-tag">Isolation Forest</span>
-          <span class="task-tag">CPCB Data</span>
-          <span class="task-tag">Dashboard</span>
-          <span class="task-tag">Vercel</span>
-        </div>
-      </div>
-      <div class="glass-card team-card fade-in">
-        <div class="team-avatar">📡</div>
-        <div class="team-name">Member 4</div>
-        <div class="team-role">Firmware + Integration</div>
-        <div class="team-tasks">
-          <span class="task-tag">Arduino Code</span>
-          <span class="task-tag">ESP-01 MQTT</span>
-          <span class="task-tag">Twilio</span>
-          <span class="task-tag">E2E Testing</span>
-        </div>
-      </div>
-      <div class="glass-card team-card fade-in">
-        <div class="team-avatar">📋</div>
-        <div class="team-name">Member 5</div>
-        <div class="team-role">Project Lead</div>
-        <div class="team-tasks">
-          <span class="task-tag">Documentation</span>
-          <span class="task-tag">Testing</span>
-          <span class="task-tag">Presentation</span>
-          <span class="task-tag">Coordination</span>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- REFERENCES -->
   <section class="section fade-in">
