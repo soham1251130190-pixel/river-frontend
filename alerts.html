@@ -338,10 +338,10 @@
 
   <nav class="navbar">
     <a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon">🌊</div>
+      <div class="nav-logo-icon">🏞️</div>
       <div>
         <div class="nav-logo-text">AQUAWATCH</div>
-        <div class="nav-logo-sub">River Pollution Monitor</div>
+        <div class="nav-logo-sub">Lake & Pond Water Monitor</div>
       </div>
     </a>
     <ul class="nav-links">
@@ -362,7 +362,7 @@
     <div class="alerts-header fade-in">
       <div>
         <div class="alerts-title">Anomaly Alerts</div>
-        <div class="alerts-subtitle">All pollution events detected by the ML model — last 7 days</div>
+        <div class="alerts-subtitle">All water quality anomalies detected by the ML model — last 7 days</div>
       </div>
       <div class="filter-bar">
         <button class="filter-btn active" onclick="setFilter('all', this)">All Events</button>
@@ -508,7 +508,7 @@
                 ${sev === 'critical' ? '🚨' : '⚠️'}
               </div>
               <div>
-                <div class="alert-event-title" style="color:${color}">${getSeverityLabel(sev)} — Pollution Detected</div>
+                <div class="alert-event-title" style="color:${color}">${getSeverityLabel(sev)} — Contamination Detected</div>
                 <div class="alert-event-time">📍 Node 1 · ${time}</div>
               </div>
             </div>
@@ -540,7 +540,7 @@
     function renderTimeline() {
       const recent = allAlerts.slice(0, 10);
       document.getElementById('timeline-container').innerHTML = recent.length === 0
-        ? '<div style="color:var(--neon-green);font-size:13px">✅ No anomaly events recorded — river water quality is normal.</div>'
+        ? '<div style="color:var(--neon-green);font-size:13px">✅ No anomaly events recorded — lake & pond water quality is normal.</div>'
         : recent.map(a => {
           const score = a.anomaly_score || 0.7;
           const sev = getSeverity(score);
