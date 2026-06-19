@@ -108,12 +108,12 @@
       padding: 0;
       overflow: hidden;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(.22,.68,0,1.2);
+      transition: all 0.3s cubic-bezier(.22, .68, 0, 1.2);
     }
 
     .alert-card:hover {
       transform: translateX(6px) translateY(-2px);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 0 0 1px rgba(94,196,212,0.08);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(94, 196, 212, 0.08);
     }
 
     .alert-card-inner {
@@ -271,7 +271,7 @@
 
     .timeline-item:hover {
       transform: translateX(6px);
-      border-color: rgba(94,196,212,0.3);
+      border-color: rgba(94, 196, 212, 0.3);
     }
 
     .timeline-dot {
@@ -318,7 +318,7 @@
     }
 
     .tval:hover {
-      background: rgba(94,196,212,0.08);
+      background: rgba(94, 196, 212, 0.08);
       color: var(--text-secondary);
     }
 
@@ -495,7 +495,7 @@
         const color = getSeverityColor(sev);
         const tds = a.tds ?? '--';
         const temp = a.temperature ?? '--';
-        const ph = a.ph ?? '--';
+        const turbidity = a.turbidity ?? '--';
         const time = new Date(a.time).toLocaleString();
         return `
     <div class="glass-card alert-card fade-in" style="animation-delay:${i * 0.06}s">
@@ -522,8 +522,8 @@
                 <span class="alert-reading-val" style="color:var(--neon-amber)">${typeof temp === 'number' ? temp.toFixed(1) : temp} <small style="font-size:11px;color:var(--text-muted)">°C</small></span>
               </div>
               <div class="alert-reading">
-                <span class="alert-reading-label">pH</span>
-                <span class="alert-reading-val" style="color:var(--neon-teal)">${typeof ph === 'number' ? ph.toFixed(2) : ph}</span>
+                <span class="alert-reading-label">Turbidity</span>
+                <span class="alert-reading-val" style="color:var(--neon-teal)">${typeof turbidity === 'number' ? turbidity.toFixed(1) : turbidity} <small style="font-size:11px;color:var(--text-muted)">NTU</small></span>
               </div>
             </div>
           </div>
@@ -553,7 +553,7 @@
           <div class="timeline-vals">
             ${a.tds ? `<span class="tval">TDS: ${a.tds.toFixed(1)} ppm</span>` : ''}
             ${a.temperature ? `<span class="tval">Temp: ${a.temperature.toFixed(1)}°C</span>` : ''}
-            ${a.ph ? `<span class="tval">pH: ${a.ph.toFixed(2)}</span>` : ''}
+            ${a.turbidity ? `<span class="tval">Turbidity: ${a.turbidity.toFixed(1)} NTU</span>` : ''}
           </div>
         </div>`;
         }).join('');

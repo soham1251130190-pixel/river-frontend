@@ -280,8 +280,8 @@
         <div class="summary-label">Avg Temp</div>
       </div>
       <div class="glass-card summary-card fade-in">
-        <div class="summary-num" style="color:var(--neon-teal)" id="avg-ph">--</div>
-        <div class="summary-label">Avg pH</div>
+        <div class="summary-num" style="color:var(--neon-teal)" id="avg-turbidity">--</div>
+        <div class="summary-label">Avg Turbidity</div>
       </div>
       <div class="glass-card summary-card fade-in">
         <div class="summary-num" style="color:var(--neon-blue)" id="total-readings">--</div>
@@ -303,7 +303,7 @@
           <div class="chart-stats">
             <div class="chart-stat" style="color:var(--neon-cyan)">● TDS</div>
             <div class="chart-stat" style="color:var(--neon-amber)">● Temp</div>
-            <div class="chart-stat" style="color:var(--neon-teal)">● pH</div>
+            <div class="chart-stat" style="color:var(--neon-teal)">● Turbidity</div>
           </div>
         </div>
         <div class="chart-combined">
@@ -337,18 +337,20 @@
         <div class="chart-container"><canvas id="temp-chart"></canvas></div>
       </div>
 
-      <!-- pH chart -->
+      <!-- Turbidity chart -->
       <div class="glass-card chart-card fade-in">
         <div class="chart-header">
-          <div class="chart-title" style="color:var(--neon-teal)">pH LEVEL</div>
+          <div class="chart-title" style="color:var(--neon-teal)">TURBIDITY</div>
           <div class="chart-stats">
-            <div class="chart-stat"><span>avg</span><strong style="color:var(--neon-teal)" id="cstat-avg-ph">--</strong>
+            <div class="chart-stat"><span>avg</span><strong style="color:var(--neon-teal)"
+                id="cstat-avg-turbidity">--</strong>
             </div>
-            <div class="chart-stat"><span>min</span><strong style="color:var(--neon-teal)" id="cstat-min-ph">--</strong>
+            <div class="chart-stat"><span>min</span><strong style="color:var(--neon-teal)"
+                id="cstat-min-turbidity">--</strong>
             </div>
           </div>
         </div>
-        <div class="chart-container"><canvas id="ph-chart"></canvas></div>
+        <div class="chart-container"><canvas id="turbidity-chart"></canvas></div>
       </div>
 
       <!-- Anomaly score chart -->
@@ -377,7 +379,7 @@
               <th>Timestamp</th>
               <th>TDS (ppm)</th>
               <th>Temp (°C)</th>
-              <th>pH</th>
+              <th>Turbidity (NTU)</th>
               <th>Anomaly Score</th>
               <th>Status</th>
             </tr>
@@ -435,7 +437,7 @@
 
     const tdsChart = makeChart('tds-chart', [ds('#00f5ff', 'TDS')], 'ppm');
     const tempChart = makeChart('temp-chart', [ds('#ffaa00', 'Temp')], '°C');
-    const phChart = makeChart('ph-chart', [ds('#00d4aa', 'pH')], 'pH');
+    const turbidityChart = makeChart('turbidity-chart', [ds('#00d4aa', 'Turbidity')], 'NTU');
     const anomalyChart = makeChart('anomaly-chart', [{ ...ds('#ff3366', 'Score'), fill: false }], 'score');
 
     // Add threshold line to anomaly chart
@@ -448,7 +450,7 @@
         labels: [], datasets: [
           { label: 'TDS/10', data: [], borderColor: '#00f5ff', backgroundColor: 'transparent', borderWidth: 2, tension: 0.4, pointRadius: 0 },
           { label: 'Temp', data: [], borderColor: '#ffaa00', backgroundColor: 'transparent', borderWidth: 2, tension: 0.4, pointRadius: 0, borderDash: [4, 4] },
-          { label: 'pH×10', data: [], borderColor: '#00d4aa', backgroundColor: 'transparent', borderWidth: 2, tension: 0.4, pointRadius: 0, borderDash: [2, 2] },
+          { label: 'Turbidity', data: [], borderColor: '#00d4aa', backgroundColor: 'transparent', borderWidth: 2, tension: 0.4, pointRadius: 0, borderDash: [2, 2] },
         ]
       },
       options: {
@@ -469,27 +471,27 @@
         const labels = history.map(r => new Date(r.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 
         // Update all charts
-        [tdsChart, tempChart, phChart, anomalyChart, combinedChart].forEach(c => { c.data.labels = labels; });
+        [tdsChart, tempChart, turbidityChart, anomalyChart, combinedChart].forEach(c => { c.data.labels = labels; });
         tdsChart.data.datasets[0].data = history.map(r => r.tds);
         tempChart.data.datasets[0].data = history.map(r => r.temperature);
-        phChart.data.datasets[0].data = history.map(r => r.ph);
+        turbidityChart.data.datasets[0].data = history.map(r => r.turbidity);
         anomalyChart.data.datasets[0].data = history.map(r => r.anomaly_score);
         combinedChart.data.datasets[0].data = history.map(r => (r.tds / 10).toFixed(1));
         combinedChart.data.datasets[1].data = history.map(r => r.temperature);
-        combinedChart.data.datasets[2].data = history.map(r => (r.ph * 10).toFixed(1));
-        [tdsChart, tempChart, phChart, anomalyChart, combinedChart].forEach(c => c.update());
+        combinedChart.data.datasets[2].data = history.map(r => r.turbidity);
+        [tdsChart, tempChart, turbidityChart, anomalyChart, combinedChart].forEach(c => c.update());
 
         // Summary stats
         const tdsList = history.map(r => r.tds);
         const tempList = history.map(r => r.temperature);
-        const phList = history.map(r => r.ph);
+        const turbidityList = history.map(r => r.turbidity);
         const anomList = history.filter(r => r.is_anomaly === 1);
         const avg = arr => (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1);
 
         document.getElementById('avg-tds').textContent = avg(tdsList);
         document.getElementById('max-tds').textContent = Math.max(...tdsList).toFixed(0);
         document.getElementById('avg-temp').textContent = avg(tempList);
-        document.getElementById('avg-ph').textContent = avg(phList);
+        document.getElementById('avg-turbidity').textContent = avg(turbidityList);
         document.getElementById('total-readings').textContent = history.length;
         document.getElementById('anomaly-count').textContent = anomList.length;
 
@@ -497,8 +499,8 @@
         document.getElementById('cstat-max-tds').textContent = Math.max(...tdsList).toFixed(0);
         document.getElementById('cstat-avg-temp').textContent = avg(tempList);
         document.getElementById('cstat-max-temp').textContent = Math.max(...tempList).toFixed(1);
-        document.getElementById('cstat-avg-ph').textContent = avg(phList);
-        document.getElementById('cstat-min-ph').textContent = Math.min(...phList).toFixed(2);
+        document.getElementById('cstat-avg-turbidity').textContent = avg(turbidityList);
+        document.getElementById('cstat-min-turbidity').textContent = Math.min(...turbidityList).toFixed(1);
 
         currentPage = 1;
         renderTable();
@@ -529,7 +531,7 @@
       <td style="font-family:var(--font-display);font-size:11px;color:var(--text-muted)">${new Date(r.time).toLocaleString()}</td>
       <td style="color:var(--neon-cyan);font-weight:600">${(r.tds || 0).toFixed(1)}</td>
       <td style="color:var(--neon-amber)">${(r.temperature || 0).toFixed(1)}</td>
-      <td style="color:var(--neon-teal)">${(r.ph || 0).toFixed(2)}</td>
+      <td style="color:var(--neon-teal)">${(r.turbidity || 0).toFixed(1)}</td>
       <td style="color:${scoreColor};font-family:var(--font-display);font-size:12px">${score.toFixed(3)}</td>
       <td>${statusHtml}</td>
     </tr>`;

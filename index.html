@@ -203,7 +203,7 @@
     }
 
     .stat-block:hover {
-      background: rgba(94,196,212,0.06);
+      background: rgba(94, 196, 212, 0.06);
     }
 
     .stat-block:hover .stat-num {
@@ -217,7 +217,7 @@
       font-weight: 700;
       color: var(--neon-cyan);
       margin-bottom: 6px;
-      transition: transform 0.35s cubic-bezier(.22,.68,0,1.2), filter 0.35s;
+      transition: transform 0.35s cubic-bezier(.22, .68, 0, 1.2), filter 0.35s;
     }
 
     .stat-label {
@@ -245,13 +245,13 @@
     .feature-card {
       padding: 32px 28px;
       cursor: default;
-      transition: transform 0.35s cubic-bezier(.22,.68,0,1.2), border-color 0.35s, box-shadow 0.35s;
+      transition: transform 0.35s cubic-bezier(.22, .68, 0, 1.2), border-color 0.35s, box-shadow 0.35s;
     }
 
     .feature-card:hover {
       transform: translateY(-6px);
-      border-color: rgba(94,196,212,0.35);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(94,196,212,0.1);
+      border-color: rgba(94, 196, 212, 0.35);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(94, 196, 212, 0.1);
     }
 
     .feature-card:hover .feature-icon {
@@ -272,7 +272,7 @@
       font-size: 24px;
       margin-bottom: 20px;
       position: relative;
-      transition: transform 0.35s cubic-bezier(.22,.68,0,1.2);
+      transition: transform 0.35s cubic-bezier(.22, .68, 0, 1.2);
     }
 
     .feature-icon::after {
@@ -351,12 +351,12 @@
       text-align: center;
       position: relative;
       border-radius: var(--radius-md);
-      transition: background 0.3s, transform 0.3s cubic-bezier(.22,.68,0,1.2);
+      transition: background 0.3s, transform 0.3s cubic-bezier(.22, .68, 0, 1.2);
       cursor: default;
     }
 
     .pipeline-step:hover {
-      background: rgba(94,196,212,0.05);
+      background: rgba(94, 196, 212, 0.05);
       transform: translateY(-4px);
     }
 
@@ -369,9 +369,19 @@
     }
 
     @keyframes iconBounce {
-      0%, 100% { transform: translateY(0); }
-      40%  { transform: translateY(-8px); }
-      60%  { transform: translateY(-3px); }
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      40% {
+        transform: translateY(-8px);
+      }
+
+      60% {
+        transform: translateY(-3px);
+      }
     }
 
     .pipeline-step-num {
@@ -413,8 +423,8 @@
       transition: color 0.3s, transform 0.3s;
     }
 
-    .pipeline-step:hover + .pipeline-arrow {
-      color: rgba(94,196,212,0.6);
+    .pipeline-step:hover+.pipeline-arrow {
+      color: rgba(94, 196, 212, 0.6);
       transform: translateX(3px);
     }
   </style>
@@ -495,13 +505,11 @@
           <div class="stat-label">Current TDS (ppm)</div>
         </div>
         <div class="stat-block">
-          <div class="stat-num" style="color:var(--neon-green)"
-            id="stat-status">--</div>
+          <div class="stat-num" style="color:var(--neon-green)" id="stat-status">--</div>
           <div class="stat-label">System Status</div>
         </div>
         <div class="stat-block">
-          <div class="stat-num" style="color:var(--neon-blue)"
-            id="stat-anomalies">--</div>
+          <div class="stat-num" style="color:var(--neon-blue)" id="stat-anomalies">--</div>
           <div class="stat-label">Anomalies (7 days)</div>
         </div>
       </div>
@@ -517,7 +525,8 @@
         <div class="glass-card feature-card fade-in">
           <div class="feature-icon fi-cyan">💧</div>
           <div class="feature-title">TDS Monitoring</div>
-          <div class="feature-desc">Total Dissolved Solids measured continuously in still water bodies. Detects chemical contamination, heavy metal
+          <div class="feature-desc">Total Dissolved Solids measured continuously in still water bodies. Detects chemical
+            contamination, heavy metal
             buildup, and salinity spikes invisible to the naked eye.</div>
         </div>
         <div class="glass-card feature-card fade-in">
@@ -528,9 +537,10 @@
         </div>
         <div class="glass-card feature-card fade-in">
           <div class="feature-icon fi-teal">⚗️</div>
-          <div class="feature-title">pH Analysis</div>
-          <div class="feature-desc">Acid rain, agricultural runoff, and chemical spills shift lake and pond pH. Our calibrated
-            sensors detect deviations from healthy 6.5–8.5 range.</div>
+          <div class="feature-title">Turbidity Sensing</div>
+          <div class="feature-desc">Suspended particles and runoff reduce water clarity. Our turbidity sensor catches
+            early contamination
+            and sediment plume events in lakes and ponds.</div>
         </div>
         <div class="glass-card feature-card fade-in">
           <div class="feature-icon fi-blue">🤖</div>
@@ -562,7 +572,7 @@
           <div class="pipeline-step-num">STEP 01</div>
           <span class="pipeline-step-icon">🔌</span>
           <div class="pipeline-step-name">Sensors</div>
-          <div class="pipeline-step-desc">TDS, Temp, pH probes in lake/pond water</div>
+          <div class="pipeline-step-desc">TDS, Temp, Turbidity probes in lake/pond water</div>
         </div>
         <div class="pipeline-arrow">→</div>
         <div class="pipeline-step">

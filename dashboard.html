@@ -316,10 +316,10 @@
         <div class="reading-range">Normal: 15 – 35 °C</div>
       </div>
       <div class="glass-card reading-card fade-in" style="--card-accent: var(--neon-teal)">
-        <div class="reading-label">pH Level</div>
-        <div class="reading-value" id="val-ph">--</div>
-        <div class="reading-unit">pH</div>
-        <div class="reading-range">Safe: 6.5 – 8.5</div>
+        <div class="reading-label">Turbidity</div>
+        <div class="reading-value" id="val-turbidity">--</div>
+        <div class="reading-unit">NTU</div>
+        <div class="reading-range">Safe: 0 – 5 NTU</div>
       </div>
       <div class="glass-card reading-card fade-in" style="--card-accent: var(--neon-green)" id="status-card">
         <div class="reading-label">System Status</div>
@@ -365,9 +365,9 @@
         <div class="neon-divider"></div>
         <div
           style="font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:1px;color:var(--text-secondary);margin-bottom:16px">
-          pH — LAST 2 HOURS</div>
+          Turbidity — LAST 2 HOURS</div>
         <div class="mini-chart-container">
-          <canvas id="ph-mini"></canvas>
+          <canvas id="turbidity-mini"></canvas>
         </div>
       </div>
     </div>
@@ -391,8 +391,7 @@
         <div class="mini-chart-container" style="width:100%">
           <canvas id="temp-mini"></canvas>
         </div>
-        <div class="gauge-reading neon-text" id="temp-display"
-          style="color:var(--neon-amber)">--</div>
+        <div class="gauge-reading neon-text" id="temp-display" style="color:var(--neon-amber)">--</div>
         <div class="gauge-unit">degrees Celsius</div>
       </div>
 
@@ -460,7 +459,7 @@
     });
 
     const tdsChart = new Chart(document.getElementById('tds-mini').getContext('2d'), chartOpts('#00f5ff', 'ppm'));
-    const phChart = new Chart(document.getElementById('ph-mini').getContext('2d'), chartOpts('#00d4aa', 'pH'));
+    const turbidityChart = new Chart(document.getElementById('turbidity-mini').getContext('2d'), chartOpts('#00d4aa', 'NTU'));
     const tempChart = new Chart(document.getElementById('temp-mini').getContext('2d'), chartOpts('#ffaa00', '°C'));
 
     // ── SCORE GAUGE (canvas arc) ─────────────────────────────
@@ -508,13 +507,13 @@
         const data = await fetch(API + '/api/latest').then(r => r.json());
         const tds = data.tds ?? 0;
         const temp = data.temperature ?? 0;
-        const ph = data.ph ?? 7;
+        const turbidity = data.turbidity ?? 0;
         const score = data.anomaly_score ?? 0;
         const bad = data.is_anomaly === 1;
 
         document.getElementById('val-tds').textContent = tds.toFixed(1);
         document.getElementById('val-temp').textContent = temp.toFixed(1);
-        document.getElementById('val-ph').textContent = ph.toFixed(2);
+        document.getElementById('val-turbidity').textContent = turbidity.toFixed(1);
         document.getElementById('temp-display').textContent = temp.toFixed(1);
         document.getElementById('val-time').textContent = new Date().toLocaleTimeString();
         document.getElementById('val-score').textContent = 'Score: ' + score.toFixed(3);
@@ -550,7 +549,7 @@
         if (bad) {
           ticker.classList.add('visible');
           document.getElementById('ticker-details').textContent =
-            `TDS: ${tds.toFixed(0)} ppm · Temp: ${temp.toFixed(1)}°C · pH: ${ph.toFixed(2)} · Score: ${score.toFixed(2)}`;
+            `TDS: ${tds.toFixed(0)} ppm · Temp: ${temp.toFixed(1)}°C · Turbidity: ${turbidity.toFixed(1)} NTU · Score: ${score.toFixed(2)}`;
           document.getElementById('nav-dot').classList.add('alert');
           document.getElementById('nav-status').textContent = 'ANOMALY DETECTED';
           addEvent('🚨', 'rgba(255,51,102,0.1)', `Anomaly detected — score ${score.toFixed(3)}`);
@@ -558,7 +557,7 @@
           ticker.classList.remove('visible');
           document.getElementById('nav-dot').classList.remove('alert');
           document.getElementById('nav-status').textContent = 'System Online';
-          addEvent('📡', 'rgba(0,245,255,0.08)', `Reading: TDS ${tds.toFixed(0)} ppm, pH ${ph.toFixed(2)}`);
+          addEvent('📡', 'rgba(0,245,255,0.08)', `Reading: TDS ${tds.toFixed(0)} ppm, Turbidity ${turbidity.toFixed(1)} NTU`);
         }
 
       } catch (e) {
@@ -576,7 +575,7 @@
         const labels = recent.map(r => new Date(r.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 
         tdsChart.data.labels = labels; tdsChart.data.datasets[0].data = recent.map(r => r.tds); tdsChart.update();
-        phChart.data.labels = labels; phChart.data.datasets[0].data = recent.map(r => r.ph); phChart.update();
+        turbidityChart.data.labels = labels; turbidityChart.data.datasets[0].data = recent.map(r => r.turbidity); turbidityChart.update();
         tempChart.data.labels = labels; tempChart.data.datasets[0].data = recent.map(r => r.temperature); tempChart.update();
       } catch (e) { }
     }
